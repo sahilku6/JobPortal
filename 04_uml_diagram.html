@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CareerBridge — UML Class Diagram</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #13141a;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2a2f45;
+    --accent: #7dd3fc;
+    --green: #86efac;
+    --amber: #fcd34d;
+    --purple: #c4b5fd;
+    --coral: #fca5a5;
+    --cyan: #67e8f9;
+    --pink: #f9a8d4;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --dim: #1e2235;
+    --uml-header: #252a40;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    min-height: 100vh;
+    padding: 40px 24px;
+  }
+
+  .page-header { text-align: center; margin-bottom: 56px; }
+  .badge {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    border: 1px solid rgba(125,211,252,0.3);
+    border-radius: 4px;
+    padding: 3px 12px;
+    margin-bottom: 16px;
+    letter-spacing: 0.12em;
+  }
+  h1 { font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 700; }
+  h1 span { color: var(--accent); }
+  .subtitle { color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 12px; margin-top: 10px; }
+
+  /* ── SECTION HEADING ── */
+  .sec-heading {
+    max-width: 1300px;
+    margin: 48px auto 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .sec-heading h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .sec-heading::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── UML CLASS BOX ── */
+  .uml-grid {
+    max-width: 1300px;
+    margin: 0 auto;
+    display: grid;
+    gap: 20px;
+  }
+  .uml-grid.cols2 { grid-template-columns: repeat(2, 1fr); }
+  .uml-grid.cols3 { grid-template-columns: repeat(3, 1fr); }
+  .uml-grid.cols4 { grid-template-columns: repeat(4, 1fr); }
+  @media (max-width: 900px) {
+    .uml-grid.cols2,
+    .uml-grid.cols3,
+    .uml-grid.cols4 { grid-template-columns: 1fr; }
+  }
+
+  .uml-class {
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    font-family: 'IBM Plex Mono', monospace;
+    background: var(--surface);
+    transition: border-color 0.2s;
+  }
+  .uml-class:hover { border-color: var(--accent); }
+
+  .uml-header {
+    background: var(--uml-header);
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .uml-stereotype {
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+  .uml-classname {
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .uml-classname.entity   { color: var(--amber); }
+  .uml-classname.service  { color: var(--green); }
+  .uml-classname.ctrl     { color: var(--accent); }
+  .uml-classname.repo     { color: var(--cyan); }
+  .uml-classname.command  { color: var(--coral); }
+  .uml-classname.query    { color: var(--purple); }
+  .uml-classname.handler  { color: var(--pink); }
+  .uml-classname.event    { color: var(--amber); }
+  .uml-classname.iface    { color: #a5f3fc; }
+  .uml-classname.config   { color: var(--muted); }
+  .uml-classname.filter   { color: #fb7185; }
+  .uml-classname.dto      { color: #d9f99d; }
+
+  .uml-pkg {
+    font-size: 9px;
+    color: var(--muted);
+    margin-top: 1px;
+  }
+
+  /* SECTIONS: fields, methods */
+  .uml-section { border-top: 1px solid var(--border); }
+  .uml-section-label {
+    font-size: 9px;
+    color: var(--muted);
+    padding: 5px 14px 2px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .uml-member {
+    display: grid;
+    grid-template-columns: 16px 1fr;
+    gap: 0;
+    padding: 3px 14px;
+    font-size: 11px;
+    border-bottom: 1px solid rgba(42,47,69,0.4);
+    align-items: start;
+  }
+  .uml-member:last-child { border-bottom: none; }
+  .uml-member:hover { background: var(--dim); }
+  .uml-vis {
+    color: var(--muted);
+    font-size: 11px;
+    padding-top: 1px;
+  }
+  .uml-vis.pub { color: var(--green); }
+  .uml-vis.prv { color: var(--coral); }
+  .uml-vis.prt { color: var(--amber); }
+
+  .uml-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .uml-fname { color: var(--text); font-size: 11px; }
+  .uml-ftype { color: var(--accent); font-size: 10px; flex-shrink: 0; }
+  .uml-ftype.enum-t  { color: var(--purple); }
+  .uml-ftype.bool-t  { color: var(--cyan); }
+  .uml-ftype.list-t  { color: var(--pink); }
+  .uml-fanno { color: var(--muted); font-size: 9px; }
+
+  .uml-method { color: var(--green); font-size: 11px; line-height: 1.5; }
+  .uml-method .ret { color: var(--accent); }
+  .uml-method .prm { color: var(--muted); }
+  .uml-method.cmd-m { color: var(--coral); }
+  .uml-method.qry-m { color: var(--purple); }
+
+  /* ── CQRS DIAGRAM ── */
+  .cqrs-diagram {
+    max-width: 1300px;
+    margin: 0 auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+  }
+  .cqrs-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    flex-wrap: wrap;
+    row-gap: 16px;
+  }
+  .cqrs-box {
+    border-radius: 8px;
+    padding: 12px 16px;
+    text-align: center;
+    border: 1px solid;
+    min-width: 130px;
+    flex: 1;
+  }
+  .cqrs-box.ctrl   { background: rgba(125,211,252,0.06); border-color: rgba(125,211,252,0.3); }
+  .cqrs-box.cmd    { background: rgba(252,165,165,0.06); border-color: rgba(252,165,165,0.3); }
+  .cqrs-box.qry    { background: rgba(196,181,253,0.06); border-color: rgba(196,181,253,0.3); }
+  .cqrs-box.cmdh   { background: rgba(249,168,212,0.06); border-color: rgba(249,168,212,0.3); }
+  .cqrs-box.qryh   { background: rgba(103,232,249,0.06); border-color: rgba(103,232,249,0.3); }
+  .cqrs-box.repo   { background: rgba(134,239,172,0.06); border-color: rgba(134,239,172,0.3); }
+  .cqrs-box.kafka  { background: rgba(252,211,77,0.06); border-color: rgba(252,211,77,0.3); }
+  .cqrs-box-title { font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; }
+  .cqrs-box.ctrl .cqrs-box-title { color: var(--accent); }
+  .cqrs-box.cmd  .cqrs-box-title { color: var(--coral); }
+  .cqrs-box.qry  .cqrs-box-title { color: var(--purple); }
+  .cqrs-box.cmdh .cqrs-box-title { color: var(--pink); }
+  .cqrs-box.qryh .cqrs-box-title { color: var(--cyan); }
+  .cqrs-box.repo .cqrs-box-title { color: var(--green); }
+  .cqrs-box.kafka .cqrs-box-title { color: var(--amber); }
+  .cqrs-box-items {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+    margin-top: 6px;
+    line-height: 1.6;
+    text-align: left;
+  }
+  .cqrs-arrow {
+    font-size: 18px;
+    color: var(--border);
+    flex-shrink: 0;
+    padding: 0 6px;
+  }
+  .cqrs-split {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 2;
+  }
+  .cqrs-split-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .cqrs-split-arrow { font-size: 14px; color: var(--border); flex-shrink: 0; }
+
+  /* ── RELATIONS LEGEND ── */
+  .rel-legend {
+    max-width: 1300px;
+    margin: 48px auto 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+  }
+  .rel-legend h3 { font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 14px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .rel-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 10px;
+  }
+  .rel-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .rel-line {
+    font-size: 14px;
+    width: 30px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  /* ── KAFKA EVENT CLASSES ── */
+  .event-section {
+    max-width: 1300px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  @media (max-width: 900px) { .event-section { grid-template-columns: 1fr; } }
+
+  /* ── SEQUENCE NOTES ── */
+  .seq-section {
+    max-width: 1300px;
+    margin: 0 auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+  }
+  .seq-section h3 { font-size: 14px; font-weight: 600; color: var(--accent); margin-bottom: 16px; }
+  .seq-row {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(42,47,69,0.5);
+    align-items: start;
+  }
+  .seq-row:last-child { border-bottom: none; }
+  .seq-caller { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--accent); }
+  .seq-desc   { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); line-height: 1.5; }
+  .seq-desc strong { color: var(--text); }
+
+  /* ── TIP BOX ── */
+  .tip-box {
+    max-width: 1300px;
+    margin: 48px auto 0;
+    background: rgba(125,211,252,0.04);
+    border: 1px solid rgba(125,211,252,0.2);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+  .tip-box h3 { color: var(--accent); font-size: 14px; font-weight: 600; margin-bottom: 14px; }
+  .tip-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .tip-list li {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    padding-left: 18px;
+    position: relative;
+    line-height: 1.6;
+  }
+  .tip-list li::before { content: '→'; position: absolute; left: 0; color: var(--accent); }
+  .tip-list li strong { color: var(--text); }
+
+  footer {
+    text-align: center;
+    margin-top: 72px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="badge">DOCUMENTATION · UML CLASS DIAGRAM</div>
+  <h1>CareerBridge <span>UML</span> Class Diagram</h1>
+  <p class="subtitle">Entities · Services · Controllers · Repositories · CQRS · Events · Kafka</p>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 1: DOMAIN ENTITIES
+     ══════════════════════════════════════════════════════════ -->
+<div class="sec-heading"><h2>Domain Entities</h2></div>
+<div class="uml-grid cols3">
+
+  <!-- User -->
+  <div class="uml-class">
+    <div class="uml-header">
+      <div>
+        <div class="uml-stereotype">«@Entity» @Table(name="users")</div>
+        <div class="uml-classname entity">User</div>
+        <div class="uml-pkg">com.jobportal.auth.model</div>
+      </div>
+    </div>
+    <div class="uml-section">
+      <div class="uml-section-label">fields</div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">id</span><span class="uml-ftype">Long @Id @PK</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">uuid</span><span class="uml-ftype">String @UK</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">username</span><span class="uml-ftype">String @UK</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">email</span><span class="uml-ftype">String @UK</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">password</span><span class="uml-ftype">String bcrypt</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">fullName</span><span class="uml-ftype">String</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">phoneNumber</span><span class="uml-ftype">String</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">profileImageUrl</span><span class="uml-ftype">String</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">profileImagePublicId</span><span class="uml-ftype">String</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">bio</span><span class="uml-ftype">String</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">location</span><span class="uml-ftype">String</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">companyName</span><span class="uml-ftype">String</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">role</span><span class="uml-ftype enum-t">Role «enum»</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">isActive</span><span class="uml-ftype bool-t">Boolean</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">isEmailVerified</span><span class="uml-ftype bool-t">Boolean</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">currentTokenJti</span><span class="uml-ftype">String single-session</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">oauthProvider</span><span class="uml-ftype">String</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">oauthProviderId</span><span class="uml-ftype">String</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">hasPostedFirstJob</span><span class="uml-ftype bool-t">Boolean</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">hasAppliedFirstJob</span><span class="uml-ftype bool-t">Boolean</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">createdAt / updatedAt</span><span class="uml-ftype">LocalDateTime</span></div></div>
+    </div>
+    <div class="uml-section">
+      <div class="uml-section-label">lifecycle / enums</div>
+      <div class="uml-member"><div class="uml-vis prt">~</div><div class="uml-method"><span class="ret">void</span> onCreate() <span class="prm">@PrePersist</span></div></div>
+      <div class="uml-member"><div class="uml-vis prt">~</div><div class="uml-method"><span class="ret">void</span> onUpdate() <span class="prm">@PreUpdate</span></div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method"><span class="uml-ftype enum-t">Role</span> {ROLE_JOB_SEEKER, ROLE_RECRUITER, ROLE_ADMIN}</div></div>
+    </div>
+  </div>
+
+  <!-- Job -->
+  <div class="uml-class">
+    <div class="uml-header">
+      <div>
+        <div class="uml-stereotype">«@Entity» @Table(name="jobs")</div>
+        <div class="uml-classname entity">Job</div>
+        <div class="uml-pkg">com.jobportal.job.model</div>
+      </div>
+    </div>
+    <div class="uml-section">
+      <div class="uml-section-label">fields</div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">id</span><span class="uml-ftype">Long @Id @PK</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">uuid</span><span class="uml-ftype">String @UK</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">title</span><span class="uml-ftype">String</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">description</span><span class="uml-ftype">String TEXT</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">company</span><span class="uml-ftype">String</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">location</span><span class="uml-ftype">String</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">jobType</span><span class="uml-ftype enum-t">JobType «enum»</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">experienceLevel</span><span class="uml-ftype enum-t">ExperienceLevel «enum»</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">status</span><span class="uml-ftype enum-t">JobStatus «enum»</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">salaryMin / salaryMax</span><span class="uml-ftype">BigDecimal</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">salaryCurrency</span><span class="uml-ftype">String "USD"</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">requirements</span><span class="uml-ftype">String TEXT</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">responsibilities</span><span class="uml-ftype">String TEXT</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">category</span><span class="uml-ftype">String</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">skills</span><span class="uml-ftype">String</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">recruiterId</span><span class="uml-ftype">Long FK→users</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">applicationDeadline</span><span class="uml-ftype">LocalDateTime</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">isRemote</span><span class="uml-ftype bool-t">Boolean</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">viewsCount / applicationsCount</span><span class="uml-ftype">Integer</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">createdAt / updatedAt</span><span class="uml-ftype">LocalDateTime</span></div></div>
+    </div>
+    <div class="uml-section">
+      <div class="uml-section-label">methods / enums</div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method"><span class="ret">boolean</span> isExpired()</div></div>
+      <div class="uml-member"><div class="uml-vis prt">~</div><div class="uml-method"><span class="ret">void</span> onCreate() / onUpdate()</div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method"><span class="uml-ftype enum-t">JobType</span> {FULL_TIME, PART_TIME, CONTRACT, INTERNSHIP, FREELANCE}</div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method"><span class="uml-ftype enum-t">ExperienceLevel</span> {ENTRY, JUNIOR, MID, SENIOR, LEAD}</div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method"><span class="uml-ftype enum-t">JobStatus</span> {ACTIVE, CLOSED, DRAFT, EXPIRED}</div></div>
+    </div>
+  </div>
+
+  <!-- JobApplication -->
+  <div class="uml-class">
+    <div class="uml-header">
+      <div>
+        <div class="uml-stereotype">«@Entity» @Table + @UniqueConstraint(user_id, job_id)</div>
+        <div class="uml-classname entity">JobApplication</div>
+        <div class="uml-pkg">com.jobportal.application.model</div>
+      </div>
+    </div>
+    <div class="uml-section">
+      <div class="uml-section-label">fields</div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">id</span><span class="uml-ftype">Long @Id @PK</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">uuid</span><span class="uml-ftype">String @UK Flyway V2</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">userId</span><span class="uml-ftype">Long FK→users</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">jobId</span><span class="uml-ftype">Long FK→jobs</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">recruiterId</span><span class="uml-ftype">Long FK→users</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">status</span><span class="uml-ftype enum-t">ApplicationStatus</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">resumeUrl</span><span class="uml-ftype">String NOT NULL V3</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">resumePublicId</span><span class="uml-ftype">String Cloudinary</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">coverLetter</span><span class="uml-ftype">String LONGTEXT</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">applicantName / Email / Phone</span><span class="uml-ftype">String denorm</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">jobTitle / companyName</span><span class="uml-ftype">String denorm</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">statusNote</span><span class="uml-ftype">String LONGTEXT</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">appliedAt / updatedAt</span><span class="uml-ftype">LocalDateTime</span></div></div>
+    </div>
+    <div class="uml-section">
+      <div class="uml-section-label">enums</div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method"><span class="uml-ftype enum-t">ApplicationStatus</span> {APPLIED, UNDER_REVIEW, SHORTLISTED, INTERVIEW_SCHEDULED, REJECTED, OFFERED, WITHDRAWN}</div></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Notification models -->
+<div class="uml-grid cols3" style="margin-top:20px;">
+  <!-- Notification -->
+  <div class="uml-class">
+    <div class="uml-header">
+      <div>
+        <div class="uml-stereotype">«@Entity» @Table(name="notifications")</div>
+        <div class="uml-classname entity">Notification</div>
+        <div class="uml-pkg">com.jobportal.notification.model</div>
+      </div>
+    </div>
+    <div class="uml-section">
+      <div class="uml-section-label">fields</div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">id</span><span class="uml-ftype">Long @Id</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">uuid</span><span class="uml-ftype">String @UK</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">userId</span><span class="uml-ftype">Long FK→users</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">applicationId</span><span class="uml-ftype">Long FK→job_apps</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">to (recipient_email)</span><span class="uml-ftype">String</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">subject / body / type</span><span class="uml-ftype">String</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">status</span><span class="uml-ftype enum-t">NotificationStatus</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">isRead</span><span class="uml-ftype bool-t">Boolean</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">sentAt / createdAt</span><span class="uml-ftype">LocalDateTime</span></div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method"><span class="uml-ftype enum-t">NotificationStatus</span> {PENDING, SENT, FAILED}</div></div>
+    </div>
+  </div>
+
+  <!-- ProcessedKafkaEvent -->
+  <div class="uml-class">
+    <div class="uml-header">
+      <div>
+        <div class="uml-stereotype">«@Entity» Idempotency Guard</div>
+        <div class="uml-classname entity">ProcessedKafkaEvent</div>
+        <div class="uml-pkg">com.jobportal.notification.model</div>
+      </div>
+    </div>
+    <div class="uml-section">
+      <div class="uml-section-label">fields</div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">id</span><span class="uml-ftype">Long @Id</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">eventKey</span><span class="uml-ftype">String @UK</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">createdAt</span><span class="uml-ftype">LocalDateTime</span></div></div>
+    </div>
+    <div class="uml-section">
+      <div class="uml-section-label">purpose</div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method">eventKey = "topic:partition:offset"<br>UNIQUE constraint prevents duplicate email sends on Kafka redeliver</div></div>
+    </div>
+  </div>
+
+  <!-- FeedbackReview -->
+  <div class="uml-class">
+    <div class="uml-header">
+      <div>
+        <div class="uml-stereotype">«@Entity» Public Reviews</div>
+        <div class="uml-classname entity">FeedbackReview</div>
+        <div class="uml-pkg">com.jobportal.notification.model</div>
+      </div>
+    </div>
+    <div class="uml-section">
+      <div class="uml-section-label">fields</div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">id</span><span class="uml-ftype">Long @Id</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">userId</span><span class="uml-ftype">Long FK→users</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">userName / userRole</span><span class="uml-ftype">String</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">reviewText</span><span class="uml-ftype">String TEXT</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">rating</span><span class="uml-ftype">Integer 1–5</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">triggerType</span><span class="uml-ftype enum-t">TriggerType</span></div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method"><span class="uml-ftype enum-t">TriggerType</span> {FIRST_JOB_POST, FIRST_JOB_APPLY}</div></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 2: CQRS PATTERN DIAGRAM
+     ══════════════════════════════════════════════════════════ -->
+<div class="sec-heading"><h2>CQRS Pattern (job-service &amp; application-service)</h2></div>
+<div class="cqrs-diagram">
+  <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:20px;">
+    Write (Commands) and Read (Queries) are handled by separate classes. The Controller calls the Service facade which delegates to the correct handler.
+  </div>
+  <div class="cqrs-flow">
+    <div class="cqrs-box ctrl">
+      <div class="cqrs-box-title">«@RestController»<br>JobController</div>
+      <div class="cqrs-box-items">POST /jobs → createJob()<br>PUT /jobs/{id} → updateJob()<br>DELETE /jobs/{id} → deleteJob()<br>GET /jobs → listJobs()<br>GET /jobs/{id} → getJob()<br>GET /jobs/search → searchJobs()</div>
+    </div>
+    <div class="cqrs-arrow">→</div>
+    <div class="cqrs-box ctrl" style="border-color:rgba(134,239,172,0.3);background:rgba(134,239,172,0.04);">
+      <div class="cqrs-box-title" style="color:var(--green);">«@Service»<br>JobService (Facade)</div>
+      <div class="cqrs-box-items">Thin orchestrator<br>Delegates to handlers<br>No business logic</div>
+    </div>
+    <div class="cqrs-arrow">→</div>
+    <div class="cqrs-split">
+      <div class="cqrs-split-row">
+        <div class="cqrs-arrow" style="color:var(--coral);">⬇</div>
+        <div class="cqrs-box cmd" style="flex:1;">
+          <div class="cqrs-box-title">Commands (Write)</div>
+          <div class="cqrs-box-items">CreateJobCommand<br>UpdateJobCommand<br>DeleteJobCommand</div>
+        </div>
+        <div class="cqrs-arrow" style="color:var(--coral);">→</div>
+        <div class="cqrs-box cmdh" style="flex:1;">
+          <div class="cqrs-box-title">JobCommandHandler</div>
+          <div class="cqrs-box-items">@Transactional<br>@CacheEvict<br>validates deadline<br>calls JobRepository<br>publishes JobEvent</div>
+        </div>
+      </div>
+      <div class="cqrs-split-row">
+        <div class="cqrs-arrow" style="color:var(--purple);">⬆</div>
+        <div class="cqrs-box qry" style="flex:1;">
+          <div class="cqrs-box-title">Queries (Read)</div>
+          <div class="cqrs-box-items">SearchJobsQuery<br>GetJobByIdQuery<br>GetRecruiterJobsQuery</div>
+        </div>
+        <div class="cqrs-arrow" style="color:var(--purple);">→</div>
+        <div class="cqrs-box qryh" style="flex:1;">
+          <div class="cqrs-box-title">JobQueryHandler</div>
+          <div class="cqrs-box-items">@Cacheable<br>reads from Redis<br>calls JobRepository<br>maps to DTO</div>
+        </div>
+      </div>
+    </div>
+    <div class="cqrs-arrow">→</div>
+    <div class="cqrs-box repo">
+      <div class="cqrs-box-title">«@Repository»<br>JobRepository</div>
+      <div class="cqrs-box-items">extends JpaRepository<br>findByRecruiterId()<br>search(keyword,location...)<br>findDistinctCategories()</div>
+    </div>
+    <div class="cqrs-arrow">+</div>
+    <div class="cqrs-box kafka">
+      <div class="cqrs-box-title">JobEventProducer</div>
+      <div class="cqrs-box-items">KafkaTemplate<br>job-events topic<br>CREATED/UPDATED<br>/DELETED actions</div>
+    </div>
+  </div>
+
+  <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border);">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:12px;">Same pattern in application-service:</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <div style="background:rgba(252,165,165,0.05);border:1px solid rgba(252,165,165,0.2);border-radius:8px;padding:10px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;">
+        <div style="color:var(--coral);font-weight:600;margin-bottom:4px;">Commands</div>
+        <div style="color:var(--muted);">ApplyJobCommand<br>UpdateApplicationStatusCommand<br>WithdrawApplicationCommand</div>
+      </div>
+      <div style="background:rgba(196,181,253,0.05);border:1px solid rgba(196,181,253,0.2);border-radius:8px;padding:10px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;">
+        <div style="color:var(--purple);font-weight:600;margin-bottom:4px;">Queries</div>
+        <div style="color:var(--muted);">GetApplicationByIdQuery<br>GetUserApplicationsQuery<br>GetJobApplicantsQuery</div>
+      </div>
+      <div style="background:rgba(249,168,212,0.05);border:1px solid rgba(249,168,212,0.2);border-radius:8px;padding:10px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;">
+        <div style="color:var(--pink);font-weight:600;margin-bottom:4px;">Handlers</div>
+        <div style="color:var(--muted);">ApplicationCommandHandler<br>ApplicationQueryHandler</div>
+      </div>
+      <div style="background:rgba(252,211,77,0.05);border:1px solid rgba(252,211,77,0.2);border-radius:8px;padding:10px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;">
+        <div style="color:var(--amber);font-weight:600;margin-bottom:4px;">Events</div>
+        <div style="color:var(--muted);">ApplicationEventProducer<br>application-events topic<br>JobEventListener (consumes)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 3: SERVICES & CONTROLLERS
+     ══════════════════════════════════════════════════════════ -->
+<div class="sec-heading"><h2>Services &amp; Controllers</h2></div>
+<div class="uml-grid cols4">
+
+  <!-- AuthService -->
+  <div class="uml-class">
+    <div class="uml-header">
+      <div>
+        <div class="uml-stereotype">«@Service» @Transactional</div>
+        <div class="uml-classname service">AuthService</div>
+        <div class="uml-pkg">com.jobportal.auth.service</div>
+      </div>
+    </div>
+    <div class="uml-section">
+      <div class="uml-section-label">dependencies (injected)</div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">userRepository</span><span class="uml-ftype">UserRepository</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">passwordEncoder</span><span class="uml-ftype">PasswordEncoder</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">jwtUtil</span><span class="uml-ftype">JwtUtil</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">cloudinary</span><span class="uml-ftype">Cloudinary</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">redisOtpService</span><span class="uml-ftype">RedisOtpService</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">userEventProducer</span><span class="uml-ftype">UserEventProducer</span></div></div>
+    </div>
+    <div class="uml-section">
+      <div class="uml-section-label">public methods</div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method"><span class="ret">AuthResponse</span> register(RegisterRequest)</div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method"><span class="ret">AuthResponse</span> login(LoginRequest)</div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method"><span class="ret">AuthResponse</span> refreshToken(String)</div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method"><span class="ret">MessageResponse</span> requestEmailOtp(SendOtpRequest)</div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method"><span class="ret">MessageResponse</span> verifyEmailOtp(VerifyOtpRequest)</div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method"><span class="ret">UserResponse</span> getCurrentUser(Long userId)</div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method"><span class="ret">UserResponse</span> updateProfile(Long, UpdateProfileRequest)</div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method"><span class="ret">UserResponse</span> uploadProfileImage(Long, MultipartFile)</div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method"><span class="ret">void</span> changePassword(Long, ChangePasswordRequest)</div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method"><span class="ret">MessageResponse</span> requestPasswordResetOtp(...)</div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method"><span class="ret">Page&lt;UserResponse&gt;</span> getAllUsers(Pageable, ...)</div></div>
+    </div>
+  </div>
+
+  <!-- JobService -->
+  <div class="uml-class">
+    <div class="uml-header">
+      <div>
+        <div class="uml-stereotype">«@Service» CQRS Facade</div>
+        <div class="uml-classname service">JobService</div>
+        <div class="uml-pkg">com.jobportal.job.service</div>
+      </div>
+    </div>
+    <div class="uml-section">
+      <div class="uml-section-label">dependencies</div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">commandHandler</span><span class="uml-ftype">JobCommandHandler</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">queryHandler</span><span class="uml-ftype">JobQueryHandler</span></div></div>
+    </div>
+    <div class="uml-section">
+      <div class="uml-section-label">public methods (delegates)</div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method cmd-m"><span class="ret">JobResponse</span> createJob(CreateJobCommand)</div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method cmd-m"><span class="ret">JobResponse</span> updateJob(UpdateJobCommand)</div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method cmd-m"><span class="ret">void</span> deleteJob(DeleteJobCommand)</div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method qry-m"><span class="ret">Page&lt;JobResponse&gt;</span> searchJobs(SearchJobsQuery)</div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method qry-m"><span class="ret">JobResponse</span> getJobById(GetJobByIdQuery)</div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method qry-m"><span class="ret">Page&lt;JobResponse&gt;</span> getRecruiterJobs(...)</div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method qry-m"><span class="ret">Map</span> getJobStats()</div></div>
+    </div>
+  </div>
+
+  <!-- ApplicationService -->
+  <div class="uml-class">
+    <div class="uml-header">
+      <div>
+        <div class="uml-stereotype">«@Service» CQRS Facade</div>
+        <div class="uml-classname service">ApplicationService</div>
+        <div class="uml-pkg">com.jobportal.application.service</div>
+      </div>
+    </div>
+    <div class="uml-section">
+      <div class="uml-section-label">dependencies</div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">commandHandler</span><span class="uml-ftype">ApplicationCommandHandler</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">queryHandler</span><span class="uml-ftype">ApplicationQueryHandler</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">cloudinary</span><span class="uml-ftype">Cloudinary SDK</span></div></div>
+    </div>
+    <div class="uml-section">
+      <div class="uml-section-label">public methods</div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method cmd-m"><span class="ret">ApplicationResponse</span> applyForJob(ApplyJobCommand)</div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method cmd-m"><span class="ret">ApplicationResponse</span> applyWithResume(cmd, MultipartFile)</div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method cmd-m"><span class="ret">ApplicationResponse</span> updateStatus(UpdateApplicationStatusCommand)</div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method cmd-m"><span class="ret">ApplicationResponse</span> withdraw(WithdrawApplicationCommand)</div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method qry-m"><span class="ret">Page&lt;AppResponse&gt;</span> getUserApplications(...)</div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method qry-m"><span class="ret">Page&lt;AppResponse&gt;</span> getJobApplicants(...)</div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method qry-m"><span class="ret">Map</span> getUserApplicationStats(Long)</div></div>
+    </div>
+  </div>
+
+  <!-- NotificationService -->
+  <div class="uml-class">
+    <div class="uml-header">
+      <div>
+        <div class="uml-stereotype">«@Service» + SSE</div>
+        <div class="uml-classname service">NotificationService</div>
+        <div class="uml-pkg">com.jobportal.notification.service</div>
+      </div>
+    </div>
+    <div class="uml-section">
+      <div class="uml-section-label">dependencies</div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">notificationRepo</span><span class="uml-ftype">NotificationRepository</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">streamService</span><span class="uml-ftype">NotificationStreamService</span></div></div>
+      <div class="uml-member"><div class="uml-vis prv">-</div><div class="uml-field"><span class="uml-fname">mailSender</span><span class="uml-ftype">JavaMailSender</span></div></div>
+    </div>
+    <div class="uml-section">
+      <div class="uml-section-label">public methods</div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method"><span class="ret">void</span> sendNotification(NotificationRequest)</div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method"><span class="ret">Page&lt;Notification&gt;</span> getUserNotifications(Long,int,int)</div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-method"><span class="ret">SseEmitter</span> subscribeToStream(Long userId)</div></div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 4: KAFKA EVENT CLASSES
+     ══════════════════════════════════════════════════════════ -->
+<div class="sec-heading"><h2>Kafka Event Classes (DTOs over the wire)</h2></div>
+<div class="event-section">
+  <div class="uml-class">
+    <div class="uml-header">
+      <div>
+        <div class="uml-stereotype">«Kafka DTO» auth-service → user-events</div>
+        <div class="uml-classname event">UserEvent</div>
+        <div class="uml-pkg">com.jobportal.auth.event</div>
+      </div>
+    </div>
+    <div class="uml-section">
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-field"><span class="uml-fname">id</span><span class="uml-ftype">Long</span></div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-field"><span class="uml-fname">email</span><span class="uml-ftype">String</span></div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-field"><span class="uml-fname">role</span><span class="uml-ftype">String</span></div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-field"><span class="uml-fname">action</span><span class="uml-ftype">String REGISTERED | TOGGLED_STATUS | DELETED</span></div></div>
+    </div>
+  </div>
+
+  <div class="uml-class">
+    <div class="uml-header">
+      <div>
+        <div class="uml-stereotype">«Kafka DTO» job-service → job-events</div>
+        <div class="uml-classname event">JobEvent</div>
+        <div class="uml-pkg">com.jobportal.job.event</div>
+      </div>
+    </div>
+    <div class="uml-section">
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-field"><span class="uml-fname">id</span><span class="uml-ftype">Long</span></div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-field"><span class="uml-fname">title</span><span class="uml-ftype">String</span></div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-field"><span class="uml-fname">company</span><span class="uml-ftype">String</span></div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-field"><span class="uml-fname">action</span><span class="uml-ftype">String CREATED | UPDATED | DELETED</span></div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-field"><span class="uml-fname">applicantEmails</span><span class="uml-ftype list-t">List&lt;String&gt;</span></div></div>
+    </div>
+  </div>
+
+  <div class="uml-class">
+    <div class="uml-header">
+      <div>
+        <div class="uml-stereotype">«Kafka DTO» application-service → application-events</div>
+        <div class="uml-classname event">ApplicationEvent</div>
+        <div class="uml-pkg">com.jobportal.application.event</div>
+      </div>
+    </div>
+    <div class="uml-section">
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-field"><span class="uml-fname">id / userId / jobId / recruiterId</span><span class="uml-ftype">Long</span></div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-field"><span class="uml-fname">applicantEmail / applicantName</span><span class="uml-ftype">String</span></div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-field"><span class="uml-fname">recruiterEmail / recruiterName</span><span class="uml-ftype">String</span></div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-field"><span class="uml-fname">jobTitle / companyName</span><span class="uml-ftype">String</span></div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-field"><span class="uml-fname">status</span><span class="uml-ftype">String</span></div></div>
+      <div class="uml-member"><div class="uml-vis pub">+</div><div class="uml-field"><span class="uml-fname">action</span><span class="uml-ftype">String SUBMITTED | STATUS_CHANGED | WITHDRAWN</span></div></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 5: GATEWAY FILTER
+     ══════════════════════════════════════════════════════════ -->
+<div class="sec-heading"><h2>API Gateway — JWT Filter</h2></div>
+<div class="seq-section">
+  <h3>JwtAuthFilter — AbstractGatewayFilterFactory (Spring Cloud Gateway)</h3>
+  <div class="seq-row">
+    <div class="seq-caller">Request arrives</div>
+    <div class="seq-desc">Every inbound HTTP request hits the gateway. Public paths (/auth/register, /auth/login, /oauth2/**) are listed in <strong>application.yml</strong> as excluded — filter skips them.</div>
+  </div>
+  <div class="seq-row">
+    <div class="seq-caller">Token extraction</div>
+    <div class="seq-desc">Normal requests → <strong>Authorization: Bearer &lt;token&gt;</strong> header. SSE path (/notifications/my/stream) → <strong>?token=&lt;jwt&gt;</strong> query parameter (because EventSource cannot send headers).</div>
+  </div>
+  <div class="seq-row">
+    <div class="seq-caller">HMAC-SHA256 verify</div>
+    <div class="seq-desc">Uses <strong>io.jsonwebtoken (jjwt)</strong> to parse and verify the JWT signature using the <strong>JWT_SECRET</strong> env var. On failure → 401 Unauthorized immediately.</div>
+  </div>
+  <div class="seq-row">
+    <div class="seq-caller">Header injection</div>
+    <div class="seq-desc">Extracts <strong>subject</strong> (userId), <strong>email</strong> claim, <strong>role</strong> claim from JWT body. Mutates the request: adds <strong>X-User-Id</strong>, <strong>X-User-Email</strong>, <strong>X-User-Role</strong> headers before forwarding downstream.</div>
+  </div>
+  <div class="seq-row">
+    <div class="seq-caller">Downstream services</div>
+    <div class="seq-desc">Never touch the JWT again. They read <strong>@RequestHeader("X-User-Id") Long userId</strong> from the trusted gateway-injected header. This is the sidecar identity propagation pattern.</div>
+  </div>
+</div>
+
+
+<!-- RELATIONSHIPS LEGEND -->
+<div class="rel-legend">
+  <h3>UML Relationship Notation Used</h3>
+  <div class="rel-items">
+    <div class="rel-item"><div class="rel-line">——▶</div> Dependency / uses (Controller → Service)</div>
+    <div class="rel-item"><div class="rel-line">◆——</div> Composition (Service owns Handler)</div>
+    <div class="rel-item"><div class="rel-line">◇——</div> Aggregation (Repository → Entity)</div>
+    <div class="rel-item"><div class="rel-line">- - ▶</div> Async dependency (Service → Kafka Topic)</div>
+    <div class="rel-item"><div class="rel-line">——▷</div> Implements interface (ServiceImpl → Service)</div>
+    <div class="rel-item"><span style="color:var(--amber);">«FK»</span> Cross-service logical foreign key (no DB constraint)</div>
+  </div>
+</div>
+
+
+<!-- TIP BOX -->
+<div class="tip-box">
+  <h3>💡 INTERVIEW TALKING POINTS — UML & Design Patterns</h3>
+  <ul class="tip-list">
+    <li><strong>CQRS justification:</strong> "I applied CQRS in job-service and application-service because read and write operations have very different concerns. Reads are cached in Redis and can be eventually consistent. Writes need @Transactional and publish Kafka events. Separating them avoids mixing caching annotations with transactional logic in the same method."</li>
+    <li><strong>Facade pattern in Services:</strong> "JobService and ApplicationService are thin facades. They contain zero business logic — they just instantiate the correct command/query object and call the handler. This means the controller is decoupled from handler implementation details."</li>
+    <li><strong>Builder pattern everywhere:</strong> "All Entity classes use Lombok @Builder. All Kafka event DTOs use @Builder. This makes test setup clean — you can build a User.builder().email(...).role(...).build() without a 20-argument constructor."</li>
+    <li><strong>Idempotency via unique constraint:</strong> "ProcessedKafkaEvent uses a UNIQUE constraint on event_key rather than a distributed lock. The INSERT either succeeds (first time) or throws DataIntegrityViolationException (duplicate), which I catch to skip the duplicate. This is simpler than Redis-based distributed locking."</li>
+    <li><strong>@PrePersist / @PreUpdate lifecycle:</strong> "I use JPA lifecycle callbacks instead of service-layer code for setting UUID, createdAt, updatedAt. This means these fields are always set correctly regardless of which code path creates/updates the entity."</li>
+    <li><strong>Denormalization trade-off:</strong> "job_title and company_name are stored on JobApplication. This is a deliberate denormalization. The alternative would be a Feign call to job-service every time you list applications — that would add latency and a synchronous dependency. The trade-off is stale data if the job is edited, which is acceptable for a historical application record."</li>
+  </ul>
+</div>
+
+<footer>
+  CareerBridge · UML Class Diagram · Spring Boot 3 · CQRS · JPA · Kafka
+</footer>
+</body>
+</html>

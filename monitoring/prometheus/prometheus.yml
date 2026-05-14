@@ -1,0 +1,125 @@
+# =============================================================================
+#  Prometheus Configuration – CareerBridge
+#  Scrapes Spring Boot metrics for all microservices.
+#  Services are reachable via the shared careerbridge-net network.
+# =============================================================================
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  scrape_timeout: 10s
+  external_labels:
+    monitor: "careerbridge-prometheus"
+    environment: "local-dev"
+
+# ── Alertmanager (optional – uncomment when you add it) ─────────────────────
+# alerting:
+#   alertmanagers:
+#     - static_configs:
+#         - targets: ["alertmanager:9093"]
+
+# ── Rule files ───────────────────────────────────────────────────────────────
+# rule_files:
+#   - "rules/*.yml"
+
+# ── Scrape Configurations ────────────────────────────────────────────────────
+scrape_configs:
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+        labels:
+          service: "prometheus"
+
+  - job_name: "grafana"
+    static_configs:
+      - targets: ["grafana:3000"]
+        labels:
+          service: "grafana"
+
+  - job_name: "zipkin"
+    metrics_path: "/prometheus"
+    static_configs:
+      - targets: ["zipkin:9411"]
+        labels:
+          service: "zipkin"
+
+  # ── CareerBridge Spring Boot Services ──────────────────────────────────────
+  # All Spring Boot services expose /actuator/prometheus when
+  # management.endpoints.web.exposure.include contains "prometheus"
+  # (configured in backend/config-repo/application.yml)
+
+  - job_name: "careerbridge-eureka"
+    metrics_path: "/actuator/prometheus"
+    scrape_interval: 20s
+    static_configs:
+      - targets: ["careerbridge-eureka:8761"]
+        labels:
+          service: "eureka-server"
+          team: "careerbridge"
+
+  - job_name: "careerbridge-config"
+    metrics_path: "/actuator/prometheus"
+    scrape_interval: 30s
+    static_configs:
+      - targets: ["careerbridge-config:9088"]
+        labels:
+          service: "config-server"
+          team: "careerbridge"
+
+  - job_name: "careerbridge-gateway"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["careerbridge-gateway:8080"]
+        labels:
+          service: "api-gateway"
+          team: "careerbridge"
+
+  - job_name: "careerbridge-auth"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["careerbridge-auth:8081"]
+        labels:
+          service: "auth-service"
+          team: "careerbridge"
+
+  - job_name: "careerbridge-job"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["careerbridge-job:8082"]
+        labels:
+          service: "job-service"
+          team: "careerbridge"
+
+  - job_name: "careerbridge-application"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["careerbridge-application:8083"]
+        labels:
+          service: "application-service"
+          team: "careerbridge"
+
+  - job_name: "careerbridge-file"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["careerbridge-file:8084"]
+        labels:
+          service: "file-service"
+          team: "careerbridge"
+
+  - job_name: "careerbridge-notification"
+    metrics_path: "/actuator/prometheus"
+    scrape_interval: 30s
+    static_configs:
+      - targets: ["careerbridge-notification:8085"]
+        labels:
+          service: "notification-service"
+          team: "careerbridge"
+
+  - job_name: "careerbridge-admin"
+    metrics_path: "/actuator/prometheus"
+    scrape_interval: 30s
+    static_configs:
+      - targets: ["careerbridge-admin:8086"]
+        labels:
+          service: "admin-service"
+          team: "careerbridge"

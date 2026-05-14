@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CareerBridge — Database Diagram</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2430;
+    --border: #30363d;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --amber: #d29922;
+    --purple: #bc8cff;
+    --coral: #ff7b72;
+    --cyan: #39c5cf;
+    --text: #c9d1d9;
+    --muted: #6e7681;
+    --dim: #21262d;
+    --pk: #ffd700;
+    --fk: #ff9500;
+    --uk: #00d4aa;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    padding: 40px 24px;
+  }
+  .page-header { text-align: center; margin-bottom: 56px; }
+  .badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--green);
+    border: 1px solid var(--green);
+    border-radius: 4px;
+    padding: 3px 10px;
+    margin-bottom: 16px;
+    letter-spacing: 0.1em;
+  }
+  h1 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; }
+  h1 span { color: var(--green); }
+  .subtitle { color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 12px; margin-top: 10px; }
+
+  /* DATABASE LAYOUT */
+  .db-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+    align-items: start;
+  }
+
+  /* DB BADGE */
+  .db-group { display: flex; flex-direction: column; gap: 0; }
+  .db-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    border-radius: 6px 6px 0 0;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .db-name.auth-db   { background: rgba(88,166,255,0.12); color: var(--accent); }
+  .db-name.job-db    { background: rgba(63,185,80,0.12);  color: var(--green); }
+  .db-name.app-db    { background: rgba(188,140,255,0.12);color: var(--purple); }
+  .db-name.notif-db  { background: rgba(57,197,207,0.12); color: var(--cyan); }
+
+  /* TABLE */
+  .tbl {
+    border-radius: 0 0 10px 10px;
+    border: 1px solid var(--border);
+    border-top: none;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .tbl+.tbl { margin-top: 16px; border-radius: 10px; border-top: 1px solid var(--border); }
+  .db-group .tbl:not(:last-child) { border-radius: 0; }
+
+  .tbl-header {
+    background: var(--dim);
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+  .tbl-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .tbl-engine {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+    background: var(--surface2);
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+
+  .col-row {
+    display: grid;
+    grid-template-columns: 18px 1fr 100px 60px;
+    gap: 0;
+    padding: 7px 14px;
+    border-bottom: 1px solid rgba(48,54,61,0.5);
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    transition: background 0.1s;
+  }
+  .col-row:last-child { border-bottom: none; }
+  .col-row:hover { background: var(--dim); }
+
+  .key-badge {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .key-badge.pk { background: rgba(255,215,0,0.15); color: var(--pk); }
+  .key-badge.fk { background: rgba(255,149,0,0.15); color: var(--fk); }
+  .key-badge.uk { background: rgba(0,212,170,0.15);  color: var(--uk); }
+  .key-badge.none { background: transparent; color: transparent; }
+
+  .col-name { color: var(--text); padding-left: 8px; }
+  .col-name.col-pk  { color: var(--pk); }
+  .col-name.col-fk  { color: var(--fk); }
+  .col-name.col-uk  { color: var(--uk); }
+
+  .col-type {
+    color: var(--accent);
+    font-size: 10px;
+    text-align: right;
+    padding-right: 8px;
+  }
+  .col-type.enum-type { color: var(--purple); }
+  .col-type.bool-type { color: var(--cyan); }
+
+  .col-constraint {
+    font-size: 9px;
+    color: var(--muted);
+    text-align: right;
+  }
+  .nn { color: var(--coral); }
+  .idx { color: var(--green); }
+
+  /* ENUM SECTION */
+  .enum-section {
+    max-width: 1200px;
+    margin: 48px auto 0;
+  }
+  .enum-section h2 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--purple);
+  }
+  .enum-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 16px;
+  }
+  .enum-card {
+    background: var(--surface);
+    border: 1px solid rgba(188,140,255,0.2);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .enum-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--purple);
+    margin-bottom: 8px;
+  }
+  .enum-values {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  .enum-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    background: rgba(188,140,255,0.08);
+    border: 1px solid rgba(188,140,255,0.15);
+    border-radius: 4px;
+    padding: 2px 7px;
+    color: var(--text);
+  }
+
+  /* RELATIONS */
+  .relations-section {
+    max-width: 1200px;
+    margin: 48px auto 0;
+  }
+  .relations-section h2 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--amber);
+  }
+  .rel-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+  .rel-table th {
+    background: var(--dim);
+    color: var(--muted);
+    font-weight: 400;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .rel-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(48,54,61,0.5);
+    color: var(--text);
+  }
+  .rel-table tr:hover td { background: var(--dim); }
+  .rel-table td.from { color: var(--accent); }
+  .rel-table td.to   { color: var(--green); }
+  .rel-table td.note { color: var(--muted); font-size: 11px; }
+  .arrow { color: var(--amber); }
+
+  /* INDEXES */
+  .idx-section {
+    max-width: 1200px;
+    margin: 48px auto 0;
+  }
+  .idx-section h2 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--green);
+  }
+  .idx-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 12px;
+  }
+  .idx-card {
+    background: var(--surface);
+    border: 1px solid rgba(63,185,80,0.15);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .idx-tbl { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--green); margin-bottom: 8px; font-weight: 500; }
+  .idx-item {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    padding: 3px 0;
+    border-bottom: 1px solid rgba(48,54,61,0.4);
+    display: flex;
+    justify-content: space-between;
+  }
+  .idx-item:last-child { border-bottom: none; }
+  .idx-item span { color: var(--text); }
+
+  /* FLYWAY */
+  .flyway-section {
+    max-width: 1200px;
+    margin: 48px auto 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+  }
+  .flyway-section h2 { font-size: 16px; font-weight: 700; color: var(--amber); margin-bottom: 16px; }
+  .migration-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .migration-item {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 16px;
+    align-items: start;
+    padding: 10px;
+    background: var(--dim);
+    border-radius: 8px;
+  }
+  .migration-ver {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--amber);
+    font-weight: 500;
+  }
+  .migration-desc {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .migration-desc strong { color: var(--text); }
+
+  /* TIPS */
+  .tip-box {
+    max-width: 1200px;
+    margin: 48px auto 0;
+    background: rgba(57,197,207,0.04);
+    border: 1px solid rgba(57,197,207,0.2);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+  .tip-box h3 { color: var(--cyan); font-size: 14px; font-weight: 700; margin-bottom: 14px; }
+  .tip-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .tip-list li {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    padding-left: 18px;
+    position: relative;
+    line-height: 1.6;
+  }
+  .tip-list li::before { content: '→'; position: absolute; left: 0; color: var(--cyan); }
+  .tip-list li strong { color: var(--text); }
+
+  footer {
+    text-align: center;
+    margin-top: 72px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .legend-row {
+    max-width: 1200px;
+    margin: 0 auto 28px;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .lbadge {
+    width: 18px; height: 14px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    font-weight: 700;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="badge">DOCUMENTATION · DATABASE SCHEMA</div>
+  <h1>CareerBridge <span>Database</span> Diagram</h1>
+  <p class="subtitle">MySQL 8 · 4 isolated databases · JPA / Hibernate · Flyway migrations (application_db)</p>
+</div>
+
+<!-- LEGEND -->
+<div class="legend-row">
+  <div class="legend-item"><div class="lbadge" style="background:rgba(255,215,0,0.15);color:var(--pk);">PK</div> Primary Key</div>
+  <div class="legend-item"><div class="lbadge" style="background:rgba(255,149,0,0.15);color:var(--fk);">FK</div> Foreign Key (logical)</div>
+  <div class="legend-item"><div class="lbadge" style="background:rgba(0,212,170,0.15);color:var(--uk);">UK</div> Unique Key</div>
+  <div class="legend-item"><div class="lbadge" style="background:rgba(255,123,114,0.1);color:var(--coral);">NN</div> NOT NULL</div>
+  <div class="legend-item"><div class="lbadge" style="background:rgba(63,185,80,0.1);color:var(--green);">IDX</div> Indexed</div>
+</div>
+
+<div class="db-grid">
+
+  <!-- auth_db -->
+  <div class="db-group">
+    <div class="db-name auth-db">🔐 auth_db — auth-service (:8081)</div>
+    <div class="tbl">
+      <div class="tbl-header">
+        <span class="tbl-name">users</span>
+        <span class="tbl-engine">InnoDB · utf8mb4</span>
+      </div>
+      <!-- cols -->
+      <div class="col-row">
+        <div class="key-badge pk">PK</div>
+        <div class="col-name col-pk">id</div>
+        <div class="col-type">BIGINT</div>
+        <div class="col-constraint nn">AUTO_INC</div>
+      </div>
+      <div class="col-row">
+        <div class="key-badge uk">UK</div>
+        <div class="col-name col-uk">uuid</div>
+        <div class="col-type">VARCHAR(36)</div>
+        <div class="col-constraint nn">UNIQUE</div>
+      </div>
+      <div class="col-row">
+        <div class="key-badge uk">UK</div>
+        <div class="col-name col-uk">username</div>
+        <div class="col-type">VARCHAR(50)</div>
+        <div class="col-constraint nn">UNIQUE NN</div>
+      </div>
+      <div class="col-row">
+        <div class="key-badge uk">UK</div>
+        <div class="col-name col-uk">email</div>
+        <div class="col-type">VARCHAR(100)</div>
+        <div class="col-constraint nn">UNIQUE NN</div>
+      </div>
+      <div class="col-row">
+        <div class="key-badge none">·</div>
+        <div class="col-name">password</div>
+        <div class="col-type">VARCHAR(255)</div>
+        <div class="col-constraint nn">NN bcrypt</div>
+      </div>
+      <div class="col-row">
+        <div class="key-badge none">·</div>
+        <div class="col-name">full_name</div>
+        <div class="col-type">VARCHAR(100)</div>
+        <div class="col-constraint"></div>
+      </div>
+      <div class="col-row">
+        <div class="key-badge none">·</div>
+        <div class="col-name">phone_number</div>
+        <div class="col-type">VARCHAR(20)</div>
+        <div class="col-constraint"></div>
+      </div>
+      <div class="col-row">
+        <div class="key-badge none">·</div>
+        <div class="col-name">profile_image_url</div>
+        <div class="col-type">TEXT</div>
+        <div class="col-constraint"></div>
+      </div>
+      <div class="col-row">
+        <div class="key-badge none">·</div>
+        <div class="col-name">profile_image_public_id</div>
+        <div class="col-type">TEXT</div>
+        <div class="col-constraint"></div>
+      </div>
+      <div class="col-row">
+        <div class="key-badge none">·</div>
+        <div class="col-name">bio</div>
+        <div class="col-type">VARCHAR(500)</div>
+        <div class="col-constraint"></div>
+      </div>
+      <div class="col-row">
+        <div class="key-badge none">·</div>
+        <div class="col-name">location</div>
+        <div class="col-type">VARCHAR(100)</div>
+        <div class="col-constraint"></div>
+      </div>
+      <div class="col-row">
+        <div class="key-badge none">·</div>
+        <div class="col-name">company_name</div>
+        <div class="col-type">VARCHAR(100)</div>
+        <div class="col-constraint"></div>
+      </div>
+      <div class="col-row">
+        <div class="key-badge none">·</div>
+        <div class="col-name">role</div>
+        <div class="col-type enum-type">ENUM</div>
+        <div class="col-constraint nn">NN</div>
+      </div>
+      <div class="col-row">
+        <div class="key-badge none">·</div>
+        <div class="col-name">is_active</div>
+        <div class="col-type bool-type">BOOLEAN</div>
+        <div class="col-constraint">DEFAULT true</div>
+      </div>
+      <div class="col-row">
+        <div class="key-badge none">·</div>
+        <div class="col-name">is_email_verified</div>
+        <div class="col-type bool-type">BOOLEAN</div>
+        <div class="col-constraint">DEFAULT false</div>
+      </div>
+      <div class="col-row">
+        <div class="key-badge none">·</div>
+        <div class="col-name">current_token_jti</div>
+        <div class="col-type">VARCHAR(36)</div>
+        <div class="col-constraint">single-session</div>
+      </div>
+      <div class="col-row">
+        <div class="key-badge none">·</div>
+        <div class="col-name">oauth_provider</div>
+        <div class="col-type">VARCHAR(50)</div>
+        <div class="col-constraint">Google SSO</div>
+      </div>
+      <div class="col-row">
+        <div class="key-badge none">·</div>
+        <div class="col-name">oauth_provider_id</div>
+        <div class="col-type">VARCHAR(255)</div>
+        <div class="col-constraint"></div>
+      </div>
+      <div class="col-row">
+        <div class="key-badge none">·</div>
+        <div class="col-name">has_posted_first_job</div>
+        <div class="col-type bool-type">BOOLEAN</div>
+        <div class="col-constraint">feedback gate</div>
+      </div>
+      <div class="col-row">
+        <div class="key-badge none">·</div>
+        <div class="col-name">has_applied_first_job</div>
+        <div class="col-type bool-type">BOOLEAN</div>
+        <div class="col-constraint">feedback gate</div>
+      </div>
+      <div class="col-row">
+        <div class="key-badge none">·</div>
+        <div class="col-name">created_at</div>
+        <div class="col-type">DATETIME</div>
+        <div class="col-constraint">@PrePersist</div>
+      </div>
+      <div class="col-row">
+        <div class="key-badge none">·</div>
+        <div class="col-name">updated_at</div>
+        <div class="col-type">DATETIME</div>
+        <div class="col-constraint">@PreUpdate</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- job_db -->
+  <div class="db-group">
+    <div class="db-name job-db">💼 job_db — job-service (:8082)</div>
+    <div class="tbl">
+      <div class="tbl-header">
+        <span class="tbl-name">jobs</span>
+        <span class="tbl-engine">InnoDB · utf8mb4</span>
+      </div>
+      <div class="col-row"><div class="key-badge pk">PK</div><div class="col-name col-pk">id</div><div class="col-type">BIGINT</div><div class="col-constraint nn">AUTO_INC</div></div>
+      <div class="col-row"><div class="key-badge uk">UK</div><div class="col-name col-uk">uuid</div><div class="col-type">VARCHAR(36)</div><div class="col-constraint nn">UNIQUE</div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">title</div><div class="col-type">VARCHAR(200)</div><div class="col-constraint nn">NN</div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">description</div><div class="col-type">TEXT</div><div class="col-constraint nn">NN</div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">company</div><div class="col-type">VARCHAR(200)</div><div class="col-constraint nn">NN</div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">location</div><div class="col-type">VARCHAR(100)</div><div class="col-constraint nn">NN</div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">job_type</div><div class="col-type enum-type">ENUM</div><div class="col-constraint"></div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">experience_level</div><div class="col-type enum-type">ENUM</div><div class="col-constraint"></div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">status</div><div class="col-type enum-type">ENUM</div><div class="col-constraint idx">IDX</div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">salary_min</div><div class="col-type">DECIMAL(12,2)</div><div class="col-constraint"></div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">salary_max</div><div class="col-type">DECIMAL(12,2)</div><div class="col-constraint"></div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">salary_currency</div><div class="col-type">VARCHAR(10)</div><div class="col-constraint">DEFAULT USD</div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">requirements</div><div class="col-type">TEXT</div><div class="col-constraint"></div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">responsibilities</div><div class="col-type">TEXT</div><div class="col-constraint"></div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">category</div><div class="col-type">VARCHAR(100)</div><div class="col-constraint idx">IDX</div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">skills</div><div class="col-type">TEXT</div><div class="col-constraint"></div></div>
+      <div class="col-row"><div class="key-badge fk">FK</div><div class="col-name col-fk">recruiter_id</div><div class="col-type">BIGINT</div><div class="col-constraint nn idx">NN IDX</div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">application_deadline</div><div class="col-type">DATETIME</div><div class="col-constraint nn">NN</div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">is_remote</div><div class="col-type bool-type">BOOLEAN</div><div class="col-constraint">DEFAULT false</div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">views_count</div><div class="col-type">INT</div><div class="col-constraint">DEFAULT 0</div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">applications_count</div><div class="col-type">INT</div><div class="col-constraint">DEFAULT 0</div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">created_at</div><div class="col-type">DATETIME</div><div class="col-constraint idx">IDX</div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">updated_at</div><div class="col-type">DATETIME</div><div class="col-constraint"></div></div>
+    </div>
+  </div>
+
+  <!-- application_db -->
+  <div class="db-group">
+    <div class="db-name app-db">📋 application_db — application-service (:8083)</div>
+    <div class="tbl">
+      <div class="tbl-header">
+        <span class="tbl-name">job_applications</span>
+        <span class="tbl-engine">InnoDB · utf8mb4 · Flyway V1–V3</span>
+      </div>
+      <div class="col-row"><div class="key-badge pk">PK</div><div class="col-name col-pk">id</div><div class="col-type">BIGINT</div><div class="col-constraint nn">AUTO_INC</div></div>
+      <div class="col-row"><div class="key-badge uk">UK</div><div class="col-name col-uk">uuid</div><div class="col-type">CHAR(36)</div><div class="col-constraint nn">UNIQUE</div></div>
+      <div class="col-row"><div class="key-badge fk">FK</div><div class="col-name col-fk">user_id</div><div class="col-type">BIGINT</div><div class="col-constraint nn idx">NN IDX</div></div>
+      <div class="col-row"><div class="key-badge fk">FK</div><div class="col-name col-fk">job_id</div><div class="col-type">BIGINT</div><div class="col-constraint nn idx">NN IDX</div></div>
+      <div class="col-row"><div class="key-badge fk">FK</div><div class="col-name col-fk">recruiter_id</div><div class="col-type">BIGINT</div><div class="col-constraint nn idx">NN IDX</div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">status</div><div class="col-type enum-type">ENUM</div><div class="col-constraint nn idx">NN IDX</div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">resume_url</div><div class="col-type">VARCHAR(500)</div><div class="col-constraint nn">NN</div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">resume_public_id</div><div class="col-type">VARCHAR(255)</div><div class="col-constraint"></div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">cover_letter</div><div class="col-type">LONGTEXT</div><div class="col-constraint"></div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">applicant_name</div><div class="col-type">VARCHAR(255)</div><div class="col-constraint"></div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">applicant_email</div><div class="col-type">VARCHAR(255)</div><div class="col-constraint"></div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">applicant_phone</div><div class="col-type">VARCHAR(20)</div><div class="col-constraint"></div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">job_title</div><div class="col-type">VARCHAR(255)</div><div class="col-constraint">denormalized</div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">company_name</div><div class="col-type">VARCHAR(255)</div><div class="col-constraint">denormalized</div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">status_note</div><div class="col-type">LONGTEXT</div><div class="col-constraint"></div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">applied_at</div><div class="col-type">DATETIME</div><div class="col-constraint idx">IDX</div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">updated_at</div><div class="col-type">DATETIME</div><div class="col-constraint"></div></div>
+      <div style="padding:7px 14px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);border-top:1px solid var(--border);">UNIQUE(user_id, job_id) — prevents duplicate applications</div>
+    </div>
+  </div>
+
+  <!-- notification_db -->
+  <div class="db-group">
+    <div class="db-name notif-db">🔔 notification_db — notification-service (:8085)</div>
+    <div class="tbl">
+      <div class="tbl-header">
+        <span class="tbl-name">notifications</span>
+        <span class="tbl-engine">InnoDB · utf8mb4</span>
+      </div>
+      <div class="col-row"><div class="key-badge pk">PK</div><div class="col-name col-pk">id</div><div class="col-type">BIGINT</div><div class="col-constraint nn">AUTO_INC</div></div>
+      <div class="col-row"><div class="key-badge uk">UK</div><div class="col-name col-uk">uuid</div><div class="col-type">VARCHAR(36)</div><div class="col-constraint nn">UNIQUE</div></div>
+      <div class="col-row"><div class="key-badge fk">FK</div><div class="col-name col-fk">user_id</div><div class="col-type">BIGINT</div><div class="col-constraint idx">IDX</div></div>
+      <div class="col-row"><div class="key-badge fk">FK</div><div class="col-name col-fk">application_id</div><div class="col-type">BIGINT</div><div class="col-constraint"></div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">recipient_email (to)</div><div class="col-type">VARCHAR(255)</div><div class="col-constraint"></div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">subject</div><div class="col-type">VARCHAR(255)</div><div class="col-constraint"></div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">body</div><div class="col-type">TEXT</div><div class="col-constraint"></div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">type</div><div class="col-type">VARCHAR(50)</div><div class="col-constraint"></div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">status</div><div class="col-type enum-type">ENUM</div><div class="col-constraint">PENDING/SENT/FAILED</div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">is_read</div><div class="col-type bool-type">BOOLEAN</div><div class="col-constraint">DEFAULT false</div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">read_at</div><div class="col-type">DATETIME</div><div class="col-constraint"></div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">error_message</div><div class="col-type">TEXT</div><div class="col-constraint"></div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">sent_at</div><div class="col-type">DATETIME</div><div class="col-constraint"></div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">created_at</div><div class="col-type">DATETIME</div><div class="col-constraint">@PrePersist</div></div>
+    </div>
+
+    <div class="tbl" style="margin-top:16px;border-radius:10px;border-top:1px solid var(--border);">
+      <div class="tbl-header">
+        <span class="tbl-name">processed_kafka_events</span>
+        <span class="tbl-engine">Idempotency table</span>
+      </div>
+      <div class="col-row"><div class="key-badge pk">PK</div><div class="col-name col-pk">id</div><div class="col-type">BIGINT</div><div class="col-constraint nn">AUTO_INC</div></div>
+      <div class="col-row"><div class="key-badge uk">UK</div><div class="col-name col-uk">event_key</div><div class="col-type">VARCHAR(255)</div><div class="col-constraint nn">UNIQUE NN</div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">created_at</div><div class="col-type">DATETIME</div><div class="col-constraint nn">@PrePersist</div></div>
+      <div style="padding:7px 14px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);border-top:1px solid var(--border);">event_key = "topic:partition:offset" — prevents duplicate email sending</div>
+    </div>
+
+    <div class="tbl" style="margin-top:16px;border-radius:10px;border-top:1px solid var(--border);">
+      <div class="tbl-header">
+        <span class="tbl-name">feedback_reviews</span>
+        <span class="tbl-engine">Public reviews table</span>
+      </div>
+      <div class="col-row"><div class="key-badge pk">PK</div><div class="col-name col-pk">id</div><div class="col-type">BIGINT</div><div class="col-constraint nn">AUTO_INC</div></div>
+      <div class="col-row"><div class="key-badge fk">FK</div><div class="col-name col-fk">user_id</div><div class="col-type">BIGINT</div><div class="col-constraint idx">IDX</div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">user_name</div><div class="col-type">VARCHAR(100)</div><div class="col-constraint"></div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">user_role</div><div class="col-type">VARCHAR(50)</div><div class="col-constraint"></div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">review_text</div><div class="col-type">TEXT</div><div class="col-constraint nn">NN</div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">rating</div><div class="col-type">INT</div><div class="col-constraint">1–5</div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">trigger_type</div><div class="col-type enum-type">ENUM</div><div class="col-constraint"></div></div>
+      <div class="col-row"><div class="key-badge none">·</div><div class="col-name">created_at</div><div class="col-type">DATETIME</div><div class="col-constraint">@PrePersist</div></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ENUM VALUES -->
+<div class="enum-section">
+  <h2>Enum Definitions</h2>
+  <div class="enum-grid">
+    <div class="enum-card">
+      <div class="enum-title">users.role (User.Role)</div>
+      <div class="enum-values">
+        <span class="enum-val">ROLE_JOB_SEEKER</span>
+        <span class="enum-val">ROLE_RECRUITER</span>
+        <span class="enum-val">ROLE_ADMIN</span>
+      </div>
+    </div>
+    <div class="enum-card">
+      <div class="enum-title">jobs.job_type (Job.JobType)</div>
+      <div class="enum-values">
+        <span class="enum-val">FULL_TIME</span>
+        <span class="enum-val">PART_TIME</span>
+        <span class="enum-val">CONTRACT</span>
+        <span class="enum-val">INTERNSHIP</span>
+        <span class="enum-val">FREELANCE</span>
+      </div>
+    </div>
+    <div class="enum-card">
+      <div class="enum-title">jobs.experience_level (Job.ExperienceLevel)</div>
+      <div class="enum-values">
+        <span class="enum-val">ENTRY</span>
+        <span class="enum-val">JUNIOR</span>
+        <span class="enum-val">MID</span>
+        <span class="enum-val">SENIOR</span>
+        <span class="enum-val">LEAD</span>
+      </div>
+    </div>
+    <div class="enum-card">
+      <div class="enum-title">jobs.status (Job.JobStatus)</div>
+      <div class="enum-values">
+        <span class="enum-val">ACTIVE</span>
+        <span class="enum-val">CLOSED</span>
+        <span class="enum-val">DRAFT</span>
+        <span class="enum-val">EXPIRED</span>
+      </div>
+    </div>
+    <div class="enum-card">
+      <div class="enum-title">job_applications.status (ApplicationStatus)</div>
+      <div class="enum-values">
+        <span class="enum-val">APPLIED</span>
+        <span class="enum-val">UNDER_REVIEW</span>
+        <span class="enum-val">SHORTLISTED</span>
+        <span class="enum-val">INTERVIEW_SCHEDULED</span>
+        <span class="enum-val">REJECTED</span>
+        <span class="enum-val">OFFERED</span>
+        <span class="enum-val">WITHDRAWN</span>
+      </div>
+    </div>
+    <div class="enum-card">
+      <div class="enum-title">notifications.status</div>
+      <div class="enum-values">
+        <span class="enum-val">PENDING</span>
+        <span class="enum-val">SENT</span>
+        <span class="enum-val">FAILED</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LOGICAL RELATIONS -->
+<div class="relations-section">
+  <h2>Logical Relationships (cross-service via IDs)</h2>
+  <table class="rel-table">
+    <thead>
+      <tr>
+        <th>From (service)</th>
+        <th>Column</th>
+        <th></th>
+        <th>To (service)</th>
+        <th>Cardinality</th>
+        <th>Note</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="from">job_applications (app-svc)</td>
+        <td>user_id</td>
+        <td class="arrow">→</td>
+        <td class="to">users.id (auth-svc)</td>
+        <td>N : 1</td>
+        <td class="note">No DB FK — cross-service logical reference via Long id</td>
+      </tr>
+      <tr>
+        <td class="from">job_applications (app-svc)</td>
+        <td>job_id</td>
+        <td class="arrow">→</td>
+        <td class="to">jobs.id (job-svc)</td>
+        <td>N : 1</td>
+        <td class="note">Feign call to verify job exists on apply</td>
+      </tr>
+      <tr>
+        <td class="from">job_applications (app-svc)</td>
+        <td>recruiter_id</td>
+        <td class="arrow">→</td>
+        <td class="to">users.id (auth-svc)</td>
+        <td>N : 1</td>
+        <td class="note">Stored to allow recruiter inbox queries without Feign</td>
+      </tr>
+      <tr>
+        <td class="from">jobs (job-svc)</td>
+        <td>recruiter_id</td>
+        <td class="arrow">→</td>
+        <td class="to">users.id (auth-svc)</td>
+        <td>N : 1</td>
+        <td class="note">Set from X-User-Id header — trusted gateway header, not body</td>
+      </tr>
+      <tr>
+        <td class="from">notifications (notif-svc)</td>
+        <td>user_id</td>
+        <td class="arrow">→</td>
+        <td class="to">users.id (auth-svc)</td>
+        <td>N : 1</td>
+        <td class="note">Populated from Kafka event payload</td>
+      </tr>
+      <tr>
+        <td class="from">notifications (notif-svc)</td>
+        <td>application_id</td>
+        <td class="arrow">→</td>
+        <td class="to">job_applications.id (app-svc)</td>
+        <td>N : 1</td>
+        <td class="note">Optional — only set for application-related notifications</td>
+      </tr>
+      <tr>
+        <td class="from">feedback_reviews (notif-svc)</td>
+        <td>user_id</td>
+        <td class="arrow">→</td>
+        <td class="to">users.id (auth-svc)</td>
+        <td>N : 1</td>
+        <td class="note">Feedback gating: triggered after first_job_post or first_apply</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- INDEXES -->
+<div class="idx-section">
+  <h2>Key Indexes</h2>
+  <div class="idx-grid">
+    <div class="idx-card">
+      <div class="idx-tbl">users (auth_db)</div>
+      <div class="idx-item">UNIQUE<span>email</span></div>
+      <div class="idx-item">UNIQUE<span>username</span></div>
+      <div class="idx-item">UNIQUE<span>uuid</span></div>
+    </div>
+    <div class="idx-card">
+      <div class="idx-tbl">jobs (job_db)</div>
+      <div class="idx-item">UNIQUE<span>uuid</span></div>
+      <div class="idx-item">IDX<span>recruiter_id</span></div>
+      <div class="idx-item">IDX<span>status</span></div>
+      <div class="idx-item">IDX<span>category</span></div>
+      <div class="idx-item">IDX<span>created_at</span></div>
+    </div>
+    <div class="idx-card">
+      <div class="idx-tbl">job_applications (application_db)</div>
+      <div class="idx-item">UNIQUE<span>uuid</span></div>
+      <div class="idx-item">UNIQUE<span>(user_id, job_id)</span></div>
+      <div class="idx-item">IDX<span>user_id</span></div>
+      <div class="idx-item">IDX<span>job_id</span></div>
+      <div class="idx-item">IDX<span>recruiter_id</span></div>
+      <div class="idx-item">IDX<span>status</span></div>
+      <div class="idx-item">IDX<span>applied_at</span></div>
+    </div>
+    <div class="idx-card">
+      <div class="idx-tbl">notifications (notification_db)</div>
+      <div class="idx-item">UNIQUE<span>uuid</span></div>
+      <div class="idx-item">IDX<span>user_id</span></div>
+    </div>
+    <div class="idx-card">
+      <div class="idx-tbl">processed_kafka_events</div>
+      <div class="idx-item">UNIQUE<span>event_key</span></div>
+    </div>
+    <div class="idx-card">
+      <div class="idx-tbl">feedback_reviews</div>
+      <div class="idx-item">IDX<span>user_id</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- FLYWAY -->
+<div class="flyway-section">
+  <h2>⚙️ Flyway Migrations — application_db</h2>
+  <div class="migration-list">
+    <div class="migration-item">
+      <div class="migration-ver">V1__Create_job_applications_table.sql</div>
+      <div class="migration-desc">Creates <strong>job_applications</strong> table with all base columns, indexes on user_id/job_id/recruiter_id/status/applied_at, and UNIQUE(user_id, job_id) constraint to prevent duplicate applications.</div>
+    </div>
+    <div class="migration-item">
+      <div class="migration-ver">V2__Add_uuid_to_job_applications.sql</div>
+      <div class="migration-desc">Adds <strong>uuid CHAR(36)</strong> column, backfills existing rows with UUID() values, makes it NOT NULL, and creates UNIQUE index — needed to expose public-safe IDs to the API without exposing auto-increment integers.</div>
+    </div>
+    <div class="migration-item">
+      <div class="migration-ver">V3__Phase_improvements.sql</div>
+      <div class="migration-desc">Makes <strong>resume_url NOT NULL</strong> (backfills legacy rows with placeholder), enforcing that every application must have a resume. Aligns constraint with Phase 1 business requirement.</div>
+    </div>
+  </div>
+</div>
+
+<!-- TIPS -->
+<div class="tip-box">
+  <h3>💡 INTERVIEW TALKING POINTS — Database Design</h3>
+  <ul class="tip-list">
+    <li><strong>Database-per-service pattern:</strong> "Each service owns its schema — auth_db, job_db, application_db, notification_db. There are NO cross-service JOINs. This is the database-per-service pattern from microservices architecture."</li>
+    <li><strong>No foreign key constraints across services:</strong> "job_applications.user_id references users.id logically, but there is no DB foreign key constraint. This is intentional — cross-service referential integrity is maintained at the application layer via Feign validation."</li>
+    <li><strong>UUID vs BIGINT:</strong> "Every table has both an auto-increment BIGINT primary key for fast joins within the service, AND a UUID exposed externally via the API. This avoids leaking row count/sequence information and allows safe public URLs."</li>
+    <li><strong>Denormalization in job_applications:</strong> "job_title and company_name are denormalized into job_applications. If a recruiter edits the job later, the application still shows the snapshot of what was posted when the user applied."</li>
+    <li><strong>Idempotency table:</strong> "processed_kafka_events stores topic:partition:offset as a unique key. If Kafka redelivers a message, the second insert throws a unique constraint violation, which we catch to skip duplicate email sending."</li>
+    <li><strong>Flyway vs auto-create:</strong> "application-service uses Flyway for production-grade versioned migrations. Other services use JPA hbm2ddl=update. In a real production environment, all services would use Flyway."</li>
+  </ul>
+</div>
+
+<footer>
+  CareerBridge · Database Schema Documentation · MySQL 8 · JPA/Hibernate · Flyway
+</footer>
+</body>
+</html>

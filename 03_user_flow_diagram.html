@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CareerBridge — User Flow Diagram</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fafaf8;
+    --surface: #ffffff;
+    --surface2: #f4f3f0;
+    --border: #e8e6e0;
+    --text: #1a1916;
+    --muted: #8a8780;
+    --dim: #d4d2cc;
+
+    --seeker: #2563eb;
+    --seeker-light: #eff6ff;
+    --seeker-border: #bfdbfe;
+
+    --recruiter: #059669;
+    --recruiter-light: #ecfdf5;
+    --recruiter-border: #a7f3d0;
+
+    --admin: #7c3aed;
+    --admin-light: #f5f3ff;
+    --admin-border: #ddd6fe;
+
+    --shared: #d97706;
+    --shared-light: #fffbeb;
+    --shared-border: #fde68a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding: 40px 24px;
+  }
+
+  /* HEADER */
+  .page-header { text-align: center; margin-bottom: 56px; }
+  .badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    border: 1px solid var(--dim);
+    border-radius: 4px;
+    padding: 3px 10px;
+    margin-bottom: 16px;
+    letter-spacing: 0.08em;
+  }
+  h1 { font-family: 'DM Serif Display', serif; font-size: clamp(2.2rem, 4vw, 3.5rem); font-weight: 400; line-height: 1.1; }
+  h1 em { font-style: normal; color: var(--seeker); }
+  .subtitle { color: var(--muted); font-size: 14px; margin-top: 10px; }
+
+  /* SHARED AUTH SECTION */
+  .shared-section {
+    max-width: 1100px;
+    margin: 0 auto 48px;
+    background: var(--shared-light);
+    border: 1px solid var(--shared-border);
+    border-radius: 16px;
+    padding: 24px 28px;
+  }
+  .shared-section h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--shared);
+    margin-bottom: 16px;
+  }
+
+  /* FLOW STEPS */
+  .flow-steps {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+    row-gap: 12px;
+  }
+  .step {
+    border-radius: 10px;
+    padding: 12px 16px;
+    min-width: 140px;
+    text-align: center;
+    flex: 1;
+    border: 1px solid;
+  }
+  .step.shared {
+    background: #fffbeb;
+    border-color: var(--shared-border);
+  }
+  .step-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--shared);
+    margin-bottom: 4px;
+  }
+  .step-title { font-size: 13px; font-weight: 600; }
+  .step-desc {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+  .arrow-sep {
+    font-size: 18px;
+    color: var(--dim);
+    flex-shrink: 0;
+    padding: 0 6px;
+  }
+  .arrow-sep.seeker  { color: var(--seeker); }
+  .arrow-sep.recruiter { color: var(--recruiter); }
+  .arrow-sep.admin { color: var(--admin); }
+  .arrow-sep.shared { color: var(--shared); }
+
+  /* ROLE COLUMNS */
+  .roles-grid {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+  }
+  @media (max-width: 900px) {
+    .roles-grid { grid-template-columns: 1fr; }
+  }
+
+  .role-col { display: flex; flex-direction: column; gap: 0; }
+  .role-header {
+    border-radius: 12px 12px 0 0;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .role-header.seeker    { background: var(--seeker-light); border: 1px solid var(--seeker-border); border-bottom: none; }
+  .role-header.recruiter { background: var(--recruiter-light); border: 1px solid var(--recruiter-border); border-bottom: none; }
+  .role-header.admin     { background: var(--admin-light); border: 1px solid var(--admin-border); border-bottom: none; }
+  .role-icon { font-size: 24px; }
+  .role-name { font-family: 'DM Serif Display', serif; font-size: 20px; font-weight: 400; }
+  .role-name.seeker    { color: var(--seeker); }
+  .role-name.recruiter { color: var(--recruiter); }
+  .role-name.admin     { color: var(--admin); }
+  .role-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+  .role-badge.seeker    { background: var(--seeker-border); color: var(--seeker); }
+  .role-badge.recruiter { background: var(--recruiter-border); color: var(--recruiter); }
+  .role-badge.admin     { background: var(--admin-border); color: var(--admin); }
+
+  .flow-body {
+    border: 1px solid;
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    background: var(--surface);
+  }
+  .flow-body.seeker    { border-color: var(--seeker-border); }
+  .flow-body.recruiter { border-color: var(--recruiter-border); }
+  .flow-body.admin     { border-color: var(--admin-border); }
+
+  .flow-node {
+    border-radius: 8px;
+    padding: 11px 14px;
+    border: 1px solid;
+    position: relative;
+  }
+  .flow-node.seeker    { background: var(--seeker-light); border-color: var(--seeker-border); }
+  .flow-node.recruiter { background: var(--recruiter-light); border-color: var(--recruiter-border); }
+  .flow-node.admin     { background: var(--admin-light); border-color: var(--admin-border); }
+  .flow-node.success   { background: #f0fdf4; border-color: #bbf7d0; }
+  .flow-node.warning   { background: #fffbeb; border-color: #fde68a; }
+  .flow-node.error     { background: #fff5f5; border-color: #fecaca; }
+
+  .fn-title { font-size: 13px; font-weight: 600; }
+  .fn-title.seeker    { color: var(--seeker); }
+  .fn-title.recruiter { color: var(--recruiter); }
+  .fn-title.admin     { color: var(--admin); }
+  .fn-title.success   { color: #16a34a; }
+  .fn-title.warning   { color: var(--shared); }
+  .fn-title.error     { color: #dc2626; }
+
+  .fn-desc {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+  .fn-api {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--dim);
+    margin-top: 6px;
+    background: var(--surface2);
+    border-radius: 4px;
+    padding: 2px 6px;
+    display: inline-block;
+  }
+  .fn-api.seeker    { background: var(--seeker-border); color: var(--seeker); opacity: 0.7; }
+  .fn-api.recruiter { background: var(--recruiter-border); color: var(--recruiter); opacity: 0.7; }
+  .fn-api.admin     { background: var(--admin-border); color: var(--admin); opacity: 0.7; }
+
+  /* vertical connector */
+  .vconn {
+    width: 1px;
+    height: 20px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .vconn.seeker    { background: linear-gradient(180deg, var(--seeker-border), var(--seeker-border)); }
+  .vconn.recruiter { background: var(--recruiter-border); }
+  .vconn.admin     { background: var(--admin-border); }
+  .vconn::after {
+    content: '▼';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 9px;
+  }
+  .vconn.seeker::after    { color: var(--seeker); }
+  .vconn.recruiter::after { color: var(--recruiter); }
+  .vconn.admin::after     { color: var(--admin); }
+
+  /* NOTIFICATION FLOW */
+  .notif-section {
+    max-width: 1100px;
+    margin: 48px auto 0;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 28px;
+    background: var(--surface);
+  }
+  .notif-section h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    font-weight: 400;
+    margin-bottom: 20px;
+  }
+  .notif-flow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    row-gap: 12px;
+    justify-content: center;
+  }
+  .notif-node {
+    border-radius: 10px;
+    padding: 12px 16px;
+    text-align: center;
+    border: 1px solid;
+    min-width: 130px;
+    flex: 1;
+  }
+  .notif-node.action { background: var(--seeker-light); border-color: var(--seeker-border); }
+  .notif-node.kafka  { background: #fffbeb; border-color: #fde68a; }
+  .notif-node.notif  { background: #f5f3ff; border-color: #ddd6fe; }
+  .notif-node.email  { background: #fff5f5; border-color: #fecaca; }
+  .notif-node.sse    { background: #ecfdf5; border-color: #a7f3d0; }
+  .nn-title { font-size: 12px; font-weight: 600; }
+  .nn-title.action { color: var(--seeker); }
+  .nn-title.kafka  { color: var(--shared); }
+  .nn-title.notif  { color: var(--admin); }
+  .nn-title.email  { color: #dc2626; }
+  .nn-title.sse    { color: var(--recruiter); }
+  .nn-desc { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+
+  /* TIP BOX */
+  .tip-box {
+    max-width: 1100px;
+    margin: 48px auto 0;
+    background: var(--seeker-light);
+    border: 1px solid var(--seeker-border);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+  .tip-box h3 { color: var(--seeker); font-size: 14px; font-weight: 600; margin-bottom: 14px; }
+  .tip-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .tip-list li {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    padding-left: 18px;
+    position: relative;
+    line-height: 1.6;
+  }
+  .tip-list li::before { content: '→'; position: absolute; left: 0; color: var(--seeker); }
+  .tip-list li strong { color: var(--text); }
+
+  footer {
+    text-align: center;
+    margin-top: 72px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="badge">DOCUMENTATION · USER FLOWS</div>
+  <h1>CareerBridge <em>User</em> Flow Diagram</h1>
+  <p class="subtitle">Three roles · Complete user journeys · API endpoints mapped to each action</p>
+</div>
+
+<!-- SHARED AUTH FLOW -->
+<div class="shared-section">
+  <h2>🔐 Shared Authentication Flow (all roles)</h2>
+  <div class="flow-steps">
+    <div class="step shared">
+      <div class="step-num">STEP 1</div>
+      <div class="step-title">Request OTP</div>
+      <div class="step-desc">POST /auth/request-email-otp<br>OTP stored in Redis with TTL</div>
+    </div>
+    <div class="arrow-sep shared">→</div>
+    <div class="step shared">
+      <div class="step-num">STEP 2</div>
+      <div class="step-title">Verify OTP</div>
+      <div class="step-desc">POST /auth/verify-email-otp<br>6-digit code validated</div>
+    </div>
+    <div class="arrow-sep shared">→</div>
+    <div class="step shared">
+      <div class="step-num">STEP 3</div>
+      <div class="step-title">Register</div>
+      <div class="step-desc">POST /auth/register<br>Role: JOB_SEEKER or RECRUITER</div>
+    </div>
+    <div class="arrow-sep shared">→</div>
+    <div class="step shared">
+      <div class="step-num">STEP 4</div>
+      <div class="step-title">Login</div>
+      <div class="step-desc">POST /auth/login<br>Returns accessToken + refreshToken</div>
+    </div>
+    <div class="arrow-sep shared">→</div>
+    <div class="step shared">
+      <div class="step-num">STEP 5</div>
+      <div class="step-title">Access App</div>
+      <div class="step-desc">Bearer token in every request<br>Gateway validates → X-User-* headers</div>
+    </div>
+  </div>
+  <div style="margin-top:12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);">
+    Alternatively: <strong style="color:var(--shared);">Google OAuth2</strong> via /oauth2/authorization/google → callback → JWT issued
+  </div>
+</div>
+
+<!-- 3 ROLE FLOWS -->
+<div class="roles-grid">
+
+  <!-- JOB SEEKER -->
+  <div class="role-col">
+    <div class="role-header seeker">
+      <div class="role-icon">🔍</div>
+      <div>
+        <div class="role-name seeker">Job Seeker</div>
+        <div class="role-badge seeker">ROLE_JOB_SEEKER</div>
+      </div>
+    </div>
+    <div class="flow-body seeker">
+
+      <div class="flow-node seeker">
+        <div class="fn-title seeker">Browse & Search Jobs</div>
+        <div class="fn-desc">Search by keyword, location, category, type, experience, remote, status</div>
+        <div class="fn-api seeker">GET /api/v1/jobs/search</div>
+      </div>
+      <div class="vconn seeker"></div>
+
+      <div class="flow-node seeker">
+        <div class="fn-title seeker">View Job Details</div>
+        <div class="fn-desc">Full job description, requirements, salary range, deadline</div>
+        <div class="fn-api seeker">GET /api/v1/jobs/{id}</div>
+      </div>
+      <div class="vconn seeker"></div>
+
+      <div class="flow-node seeker">
+        <div class="fn-title seeker">Upload Resume</div>
+        <div class="fn-desc">Upload PDF/DOCX to Cloudinary via file-service — get a resumeUrl back</div>
+        <div class="fn-api seeker">POST /api/v1/files/resume</div>
+      </div>
+      <div class="vconn seeker"></div>
+
+      <div class="flow-node seeker">
+        <div class="fn-title seeker">Apply for Job</div>
+        <div class="fn-desc">Submit cover letter + resumeUrl. One application per job enforced by UNIQUE(user_id, job_id)</div>
+        <div class="fn-api seeker">POST /api/v1/applications</div>
+      </div>
+      <div class="vconn seeker"></div>
+
+      <div class="flow-node success">
+        <div class="fn-title success">📧 Confirmation Email</div>
+        <div class="fn-desc">application-service → Kafka → notification-service → Gmail SMTP → applicant inbox</div>
+      </div>
+      <div class="vconn seeker"></div>
+
+      <div class="flow-node seeker">
+        <div class="fn-title seeker">Track Applications</div>
+        <div class="fn-desc">View all own applications, filter by status, see status notes from recruiter</div>
+        <div class="fn-api seeker">GET /api/v1/applications/my</div>
+      </div>
+      <div class="vconn seeker"></div>
+
+      <div class="flow-node seeker">
+        <div class="fn-title seeker">Receive Status Updates</div>
+        <div class="fn-desc">SSE stream delivers real-time notifications when recruiter updates status</div>
+        <div class="fn-api seeker">GET /notifications/my/stream</div>
+      </div>
+      <div class="vconn seeker"></div>
+
+      <div class="flow-node warning">
+        <div class="fn-title warning">Withdraw Application</div>
+        <div class="fn-desc">Can withdraw if status is not OFFERED or REJECTED</div>
+        <div class="fn-api">PATCH /applications/{id}/withdraw</div>
+      </div>
+      <div class="vconn seeker"></div>
+
+      <div class="flow-node seeker">
+        <div class="fn-title seeker">Manage Profile</div>
+        <div class="fn-desc">Update bio, location, company, phone. Upload avatar to Cloudinary. Change password.</div>
+        <div class="fn-api seeker">PUT /api/v1/users/me</div>
+      </div>
+      <div class="vconn seeker"></div>
+
+      <div class="flow-node success">
+        <div class="fn-title success">🌟 Feedback Prompt</div>
+        <div class="fn-desc">After first job application: system prompts for platform feedback/review</div>
+        <div class="fn-api">GET /users/should-prompt-feedback</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- RECRUITER -->
+  <div class="role-col">
+    <div class="role-header recruiter">
+      <div class="role-icon">📢</div>
+      <div>
+        <div class="role-name recruiter">Recruiter</div>
+        <div class="role-badge recruiter">ROLE_RECRUITER</div>
+      </div>
+    </div>
+    <div class="flow-body recruiter">
+
+      <div class="flow-node recruiter">
+        <div class="fn-title recruiter">Create Job Posting</div>
+        <div class="fn-desc">Title, description, company, location, type, experience, salary range, deadline (must be future date)</div>
+        <div class="fn-api recruiter">POST /api/v1/jobs</div>
+      </div>
+      <div class="vconn recruiter"></div>
+
+      <div class="flow-node success">
+        <div class="fn-title success">📧 Job Created Email</div>
+        <div class="fn-desc">job-service → Kafka (job-events: CREATED) → notification-service → Gmail SMTP</div>
+      </div>
+      <div class="vconn recruiter"></div>
+
+      <div class="flow-node recruiter">
+        <div class="fn-title recruiter">Manage Own Jobs</div>
+        <div class="fn-desc">View, edit, update status (ACTIVE/CLOSED/DRAFT), or delete own job listings</div>
+        <div class="fn-api recruiter">GET /api/v1/jobs/recruiter/my</div>
+      </div>
+      <div class="vconn recruiter"></div>
+
+      <div class="flow-node recruiter">
+        <div class="fn-title recruiter">View Applicant Inbox</div>
+        <div class="fn-desc">See all applications across all own jobs. Paginated inbox sorted by applied_at desc.</div>
+        <div class="fn-api recruiter">GET /applications/recruiter/inbox</div>
+      </div>
+      <div class="vconn recruiter"></div>
+
+      <div class="flow-node recruiter">
+        <div class="fn-title recruiter">Review Applicants per Job</div>
+        <div class="fn-desc">See all applicants for a specific posting. View resume URL, cover letter, applicant info.</div>
+        <div class="fn-api recruiter">GET /applications/job/{jobId}</div>
+      </div>
+      <div class="vconn recruiter"></div>
+
+      <div class="flow-node recruiter">
+        <div class="fn-title recruiter">Update Application Status</div>
+        <div class="fn-desc">Move applicant through: APPLIED → UNDER_REVIEW → SHORTLISTED → INTERVIEW_SCHEDULED → REJECTED / OFFERED. Can add status_note.</div>
+        <div class="fn-api recruiter">PATCH /applications/{id}/status</div>
+      </div>
+      <div class="vconn recruiter"></div>
+
+      <div class="flow-node success">
+        <div class="fn-title success">📧 Status Change Email</div>
+        <div class="fn-desc">application-service → Kafka (STATUS_CHANGED) → notification-service → Gmail → applicant</div>
+      </div>
+      <div class="vconn recruiter"></div>
+
+      <div class="flow-node recruiter">
+        <div class="fn-title recruiter">Upload Company Logo</div>
+        <div class="fn-desc">Upload company logo image to Cloudinary for display on job postings</div>
+        <div class="fn-api recruiter">POST /api/v1/files/company-logo</div>
+      </div>
+      <div class="vconn recruiter"></div>
+
+      <div class="flow-node recruiter">
+        <div class="fn-title recruiter">Manage Profile</div>
+        <div class="fn-desc">Update professional profile, company name, location, avatar</div>
+        <div class="fn-api recruiter">PUT /api/v1/users/me</div>
+      </div>
+      <div class="vconn recruiter"></div>
+
+      <div class="flow-node success">
+        <div class="fn-title success">🌟 Feedback Prompt</div>
+        <div class="fn-desc">After posting first job: system prompts for platform feedback/review</div>
+        <div class="fn-api">GET /users/should-prompt-feedback</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ADMIN -->
+  <div class="role-col">
+    <div class="role-header admin">
+      <div class="role-icon">⚙️</div>
+      <div>
+        <div class="role-name admin">Admin</div>
+        <div class="role-badge admin">ROLE_ADMIN</div>
+      </div>
+    </div>
+    <div class="flow-body admin">
+
+      <div class="flow-node admin">
+        <div class="fn-title admin">Analytics Dashboard</div>
+        <div class="fn-desc">See totalUsers, totalJobs, activeJobs, closedJobs, totalApplications — aggregated via Feign from 3 services</div>
+        <div class="fn-api admin">GET /api/v1/admin/dashboard</div>
+      </div>
+      <div class="vconn admin"></div>
+
+      <div class="flow-node admin">
+        <div class="fn-title admin">List All Users</div>
+        <div class="fn-desc">Filter by keyword, role (JOB_SEEKER / RECRUITER / ADMIN), isActive. Paginated results.</div>
+        <div class="fn-api admin">GET /api/v1/admin/users</div>
+      </div>
+      <div class="vconn admin"></div>
+
+      <div class="flow-node warning">
+        <div class="fn-title warning">Toggle User Status</div>
+        <div class="fn-desc">Activate or deactivate any user account. Deactivated users cannot log in.</div>
+        <div class="fn-api">PATCH /admin/users/{id}/toggle-status</div>
+      </div>
+      <div class="vconn admin"></div>
+
+      <div class="flow-node error">
+        <div class="fn-title error">Delete User</div>
+        <div class="fn-desc">Permanently delete any user account from the system</div>
+        <div class="fn-api">DELETE /api/v1/admin/users/{id}</div>
+      </div>
+      <div class="vconn admin"></div>
+
+      <div class="flow-node admin">
+        <div class="fn-title admin">List All Jobs</div>
+        <div class="fn-desc">Filter by keyword, status (ACTIVE/CLOSED/DRAFT/EXPIRED). Paginated.</div>
+        <div class="fn-api admin">GET /api/v1/admin/jobs</div>
+      </div>
+      <div class="vconn admin"></div>
+
+      <div class="flow-node error">
+        <div class="fn-title error">Delete Any Job</div>
+        <div class="fn-desc">Admin can delete any job posting regardless of who created it</div>
+        <div class="fn-api">DELETE /api/v1/admin/jobs/{id}</div>
+      </div>
+      <div class="vconn admin"></div>
+
+      <div class="flow-node admin">
+        <div class="fn-title admin">List All Applications</div>
+        <div class="fn-desc">Platform-wide view of all job applications. Filter by userId, jobId, status.</div>
+        <div class="fn-api admin">GET /api/v1/admin/applications</div>
+      </div>
+      <div class="vconn admin"></div>
+
+      <div class="flow-node admin">
+        <div class="fn-title admin">Update Any Application</div>
+        <div class="fn-desc">Admin can change status of any application, not limited to own jobs</div>
+        <div class="fn-api admin">PATCH /applications/{id}/status</div>
+      </div>
+      <div class="vconn admin"></div>
+
+      <div class="flow-node admin">
+        <div class="fn-title admin">View Public Feedback</div>
+        <div class="fn-desc">Read all submitted user reviews and ratings for the platform</div>
+        <div class="fn-api admin">GET /notifications/feedback/public</div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- NOTIFICATION FLOW -->
+<div class="notif-section">
+  <h2>🔔 Notification & Email Flow</h2>
+  <div class="notif-flow">
+    <div class="notif-node action">
+      <div class="nn-title action">User Action</div>
+      <div class="nn-desc">Apply / Status Change / Register / Job Post / Withdraw</div>
+    </div>
+    <div class="arrow-sep shared">→</div>
+    <div class="notif-node kafka">
+      <div class="nn-title kafka">Kafka Producer</div>
+      <div class="nn-desc">user-events | job-events | application-events topic</div>
+    </div>
+    <div class="arrow-sep shared">→</div>
+    <div class="notif-node notif">
+      <div class="nn-title notif">Notification Service</div>
+      <div class="nn-desc">Idempotency check → parse payload → build message</div>
+    </div>
+    <div class="arrow-sep shared">→</div>
+    <div class="notif-node email">
+      <div class="nn-title email">Gmail SMTP</div>
+      <div class="nn-desc">JavaMailSender → HTML email → user inbox</div>
+    </div>
+    <div class="arrow-sep shared">+</div>
+    <div class="notif-node sse">
+      <div class="nn-title sse">SSE Stream</div>
+      <div class="nn-desc">Real-time push to browser via EventSource / SseEmitter</div>
+    </div>
+  </div>
+
+  <div style="margin-top:20px;">
+    <div style="font-size:13px;font-weight:600;margin-bottom:8px;">Events and their email actions:</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;">
+      <div style="background:var(--surface2);border-radius:8px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;">
+        <strong style="color:var(--seeker);">application-events</strong><br>
+        <span style="color:var(--muted);">SUBMITTED → email to applicant + recruiter<br>STATUS_CHANGED → email to applicant<br>WITHDRAWN → email to applicant</span>
+      </div>
+      <div style="background:var(--surface2);border-radius:8px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;">
+        <strong style="color:var(--recruiter);">job-events</strong><br>
+        <span style="color:var(--muted);">CREATED → confirmation to recruiter<br>DELETED → notify affected applicants<br>(applicantEmails list in event)</span>
+      </div>
+      <div style="background:var(--surface2);border-radius:8px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;">
+        <strong style="color:var(--admin);">user-events</strong><br>
+        <span style="color:var(--muted);">REGISTERED → welcome email<br>TOGGLED_STATUS → account notification<br>DELETED → goodbye email</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PASSWORD RESET FLOW -->
+<div style="max-width:1100px;margin:32px auto 0;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px 28px;">
+  <h2 style="font-family:'DM Serif Display',serif;font-size:20px;font-weight:400;margin-bottom:16px;">🔑 Forgot Password Flow (3-step)</h2>
+  <div class="flow-steps">
+    <div class="step shared">
+      <div class="step-num">STEP 1</div>
+      <div class="step-title">Request Reset OTP</div>
+      <div class="step-desc">POST /auth/forgot-password/request<br>OTP emailed via Gmail SMTP</div>
+    </div>
+    <div class="arrow-sep shared">→</div>
+    <div class="step shared">
+      <div class="step-num">STEP 2</div>
+      <div class="step-title">Verify OTP</div>
+      <div class="step-desc">POST /auth/forgot-password/verify<br>Redis validates 6-digit code</div>
+    </div>
+    <div class="arrow-sep shared">→</div>
+    <div class="step shared">
+      <div class="step-num">STEP 3</div>
+      <div class="step-title">Set New Password</div>
+      <div class="step-desc">POST /auth/forgot-password/reset<br>bcrypt encoded, stored in auth_db</div>
+    </div>
+    <div class="arrow-sep shared">→</div>
+    <div class="step" style="background:#f0fdf4;border-color:#bbf7d0;">
+      <div class="step-num" style="color:#16a34a;">DONE</div>
+      <div class="step-title" style="color:#16a34a;">Password Updated</div>
+      <div class="step-desc">User can log in with new password<br>All existing JWTs invalidated via JTI</div>
+    </div>
+  </div>
+</div>
+
+<!-- TIPS -->
+<div class="tip-box">
+  <h3>💡 INTERVIEW TALKING POINTS — User Flows</h3>
+  <ul class="tip-list">
+    <li><strong>OTP-first registration:</strong> "I require email verification before registration — not after. This prevents registering with fake emails and having unverified accounts in the DB."</li>
+    <li><strong>One application per job:</strong> "The UNIQUE(user_id, job_id) constraint in job_applications at the DB level prevents duplicate applications even if the API is called simultaneously. The application layer checks first, but the DB is the source of truth."</li>
+    <li><strong>CQRS in job and application service:</strong> "Write operations (create job, apply, change status) go through Command handlers. Read operations (search, get by id, list) go through Query handlers. This separates concerns and makes each handler easier to test independently."</li>
+    <li><strong>Recruiter inbox design:</strong> "recruiter_id is stored denormalized on every job_application row. This means the inbox query is a single-table SELECT — no JOIN to the jobs table needed."</li>
+    <li><strong>Feedback gating:</strong> "The system tracks has_posted_first_job and has_applied_first_job flags on the User entity. After triggering either action, the frontend calls /users/should-prompt-feedback, and if true, shows the feedback modal. This is shown at most once per trigger type."</li>
+    <li><strong>Admin via Feign:</strong> "Admin dashboard data comes from 3 services via Feign. If any service is down, Resilience4j falls back to returning 0 for that stat — the dashboard still loads, just with partial data."</li>
+  </ul>
+</div>
+
+<footer>
+  CareerBridge · User Flow Documentation · React 18 · Spring Boot 3 · Role-Based Access
+</footer>
+</body>
+</html>

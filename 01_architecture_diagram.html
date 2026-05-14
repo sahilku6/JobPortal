@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CareerBridge — Architecture Diagram</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0f1a;
+    --surface: #111827;
+    --surface2: #1a2233;
+    --border: #1e2d45;
+    --accent: #3b82f6;
+    --accent2: #06b6d4;
+    --purple: #8b5cf6;
+    --green: #10b981;
+    --amber: #f59e0b;
+    --coral: #f97316;
+    --red: #ef4444;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --dim: #334155;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    padding: 40px 24px;
+  }
+  .page-header {
+    text-align: center;
+    margin-bottom: 56px;
+    position: relative;
+  }
+  .page-header::after {
+    content: '';
+    display: block;
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    margin: 20px auto 0;
+    border-radius: 2px;
+  }
+  .badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent2);
+    border: 1px solid var(--accent2);
+    border-radius: 4px;
+    padding: 3px 10px;
+    margin-bottom: 16px;
+    letter-spacing: 0.1em;
+  }
+  h1 { font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 800; line-height: 1.1; }
+  h1 span { color: var(--accent); }
+  .subtitle {
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    margin-top: 12px;
+  }
+
+  /* ── DIAGRAM CANVAS ── */
+  .diagram-wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* generic layer */
+  .layer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  /* connector line */
+  .connector {
+    width: 2px;
+    height: 36px;
+    background: linear-gradient(180deg, var(--accent) 0%, var(--dim) 100%);
+    position: relative;
+    margin: 0 auto;
+    flex-shrink: 0;
+  }
+  .connector::after {
+    content: '▼';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    color: var(--accent);
+  }
+  .connector.kafka { background: linear-gradient(180deg, var(--amber) 0%, var(--dim) 100%); }
+  .connector.kafka::after { color: var(--amber); }
+  .connector.green { background: linear-gradient(180deg, var(--green) 0%, var(--dim) 100%); }
+  .connector.green::after { color: var(--green); }
+
+  /* boxes */
+  .box {
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    padding: 16px 24px;
+    text-align: center;
+    position: relative;
+    transition: border-color 0.2s;
+  }
+  .box:hover { border-color: var(--accent); }
+  .box-title {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .box-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .box-port {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--accent2);
+    background: rgba(6,182,212,0.08);
+    border: 1px solid rgba(6,182,212,0.2);
+    border-radius: 4px;
+    padding: 1px 7px;
+    display: inline-block;
+    margin-top: 5px;
+  }
+
+  .box.frontend  { border-color: var(--green);  width: 380px; }
+  .box.frontend .box-title { color: var(--green); }
+  .box.gateway   { border-color: var(--accent);  width: 560px; }
+  .box.gateway .box-title  { color: var(--accent); }
+  .box.kafka-box { border-color: var(--amber);   width: 560px; }
+  .box.kafka-box .box-title { color: var(--amber); }
+
+  /* services row */
+  .services-row {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .svc {
+    border-radius: 10px;
+    border: 1px solid var(--purple);
+    background: rgba(139,92,246,0.06);
+    padding: 12px 8px;
+    text-align: center;
+    cursor: default;
+    transition: all 0.2s;
+  }
+  .svc:hover {
+    background: rgba(139,92,246,0.14);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(139,92,246,0.2);
+  }
+  .svc-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #c4b5fd;
+  }
+  .svc-port {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+  .svc-desc {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: #6d5fa6;
+    margin-top: 5px;
+    line-height: 1.4;
+  }
+
+  /* bus / fan lines visual */
+  .fan-visual {
+    position: relative;
+    width: 100%;
+    max-width: 1100px;
+    height: 32px;
+    margin: 0 auto;
+  }
+  .fan-line {
+    position: absolute;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(180deg, transparent, var(--purple));
+  }
+  .bus-line {
+    position: absolute;
+    top: 0;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: var(--dim);
+  }
+
+  /* data stores & infra rows */
+  .infra-row {
+    display: grid;
+    gap: 10px;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .infra-row.stores4 { grid-template-columns: repeat(4, 1fr); }
+  .infra-row.stores3 { grid-template-columns: repeat(3, 1fr); }
+  .infra-row.stores5 { grid-template-columns: repeat(5, 1fr); }
+  .infra-box {
+    border-radius: 10px;
+    border: 1px solid;
+    padding: 12px 10px;
+    text-align: center;
+    background: var(--surface);
+  }
+  .infra-box.db    { border-color: var(--coral); }
+  .infra-box.cache { border-color: var(--accent2); }
+  .infra-box.cloud { border-color: #a78bfa; }
+  .infra-box.mail  { border-color: var(--red); }
+  .infra-box.reg   { border-color: var(--muted); }
+  .infra-box.mon   { border-color: var(--green); }
+  .infra-title { font-size: 12px; font-weight: 700; }
+  .infra-box.db .infra-title    { color: var(--coral); }
+  .infra-box.cache .infra-title { color: var(--accent2); }
+  .infra-box.cloud .infra-title { color: #a78bfa; }
+  .infra-box.mail .infra-title  { color: var(--red); }
+  .infra-box.reg .infra-title   { color: var(--muted); }
+  .infra-box.mon .infra-title   { color: var(--green); }
+  .infra-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+
+  /* section labels */
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-align: center;
+    margin: 18px 0 8px;
+  }
+  .section-label.first { margin-top: 0; }
+
+  /* kafka arrows visual */
+  .kafka-arrows {
+    position: relative;
+    width: 100%;
+    max-width: 1100px;
+    height: 40px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+  }
+  .kafka-arrow-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    width: 100%;
+  }
+
+  /* legend */
+  .legend {
+    max-width: 1100px;
+    margin: 48px auto 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  /* explanation cards */
+  .explain-grid {
+    max-width: 1100px;
+    margin: 56px auto 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+  .explain-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    transition: border-color 0.2s;
+  }
+  .explain-card:hover { border-color: var(--dim); }
+  .ec-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .ec-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .ec-title { font-size: 14px; font-weight: 700; }
+  .ec-body {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .ec-body strong { color: var(--text); font-weight: 500; }
+
+  /* interview tip */
+  .tip-box {
+    max-width: 1100px;
+    margin: 56px auto 0;
+    background: rgba(59,130,246,0.06);
+    border: 1px solid rgba(59,130,246,0.25);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+  .tip-box h3 {
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    letter-spacing: 0.05em;
+  }
+  .tip-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .tip-list li {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    padding-left: 18px;
+    position: relative;
+    line-height: 1.6;
+  }
+  .tip-list li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+  .tip-list li strong { color: var(--text); }
+
+  .flow-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+  .wide-center { display: flex; justify-content: center; width: 100%; }
+
+  /* JWT flow */
+  .jwt-flow {
+    max-width: 1100px;
+    margin: 0 auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+  }
+  .jwt-steps {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+  .jwt-step {
+    background: var(--surface2);
+    border: 1px solid var(--dim);
+    border-radius: 8px;
+    padding: 10px 14px;
+    text-align: center;
+    flex: 1;
+    min-width: 150px;
+  }
+  .jwt-step-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .jwt-step-text { font-size: 12px; font-weight: 600; }
+  .jwt-step-desc {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .jwt-arrow { color: var(--accent); font-size: 18px; flex-shrink: 0; }
+
+  footer {
+    text-align: center;
+    margin-top: 72px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="badge">DOCUMENTATION · ARCHITECTURE</div>
+  <h1>CareerBridge <span>Architecture</span></h1>
+  <p class="subtitle">Spring Boot 3 · Spring Cloud · React 18 · Kafka · Docker · Microservices</p>
+</div>
+
+<div class="flow-container">
+
+  <!-- FRONTEND -->
+  <div class="section-label first">CLIENT LAYER</div>
+  <div class="wide-center">
+    <div class="box frontend">
+      <div class="box-title">🌐 React SPA (Browser)</div>
+      <div class="box-sub">Vite 5 · Redux Toolkit · TailwindCSS · React Hook Form · Zod · Axios</div>
+      <div class="box-port">localhost:3000</div>
+    </div>
+  </div>
+
+  <div class="connector"></div>
+
+  <!-- GATEWAY -->
+  <div class="section-label">API GATEWAY LAYER</div>
+  <div class="wide-center">
+    <div class="box gateway">
+      <div class="box-title">🛡️ API Gateway</div>
+      <div class="box-sub">JWT Auth Filter · CORS · Rate Limiting · Swagger UI Aggregation · Eureka Load Balancer</div>
+      <div class="box-port">localhost:8080 — all traffic passes through here</div>
+    </div>
+  </div>
+
+  <!-- FAN LINES (visual) -->
+  <div style="width:100%;max-width:1100px;height:36px;position:relative;margin:0 auto;">
+    <div style="position:absolute;top:0;left:8.3%;right:8.3%;height:1px;background:var(--dim);"></div>
+    <div style="position:absolute;top:0;left:8.3%;width:1px;height:100%;background:linear-gradient(180deg,var(--dim),var(--purple));"></div>
+    <div style="position:absolute;top:0;left:24.9%;width:1px;height:100%;background:linear-gradient(180deg,var(--dim),var(--purple));"></div>
+    <div style="position:absolute;top:0;left:41.6%;width:1px;height:100%;background:linear-gradient(180deg,var(--dim),var(--purple));"></div>
+    <div style="position:absolute;top:0;left:58.3%;width:1px;height:100%;background:linear-gradient(180deg,var(--dim),var(--purple));"></div>
+    <div style="position:absolute;top:0;left:75.1%;width:1px;height:100%;background:linear-gradient(180deg,var(--dim),var(--purple));"></div>
+    <div style="position:absolute;top:0;left:91.7%;width:1px;height:100%;background:linear-gradient(180deg,var(--dim),var(--purple));"></div>
+  </div>
+
+  <!-- SERVICES ROW -->
+  <div class="section-label">MICROSERVICES LAYER</div>
+  <div class="services-row">
+    <div class="svc">
+      <div class="svc-name">auth-service</div>
+      <div class="svc-port">:8081</div>
+      <div class="svc-desc">Register · Login · OTP · JWT · OAuth2 · User Profile</div>
+    </div>
+    <div class="svc">
+      <div class="svc-name">job-service</div>
+      <div class="svc-port">:8082</div>
+      <div class="svc-desc">CRUD Jobs · Search · CQRS · Redis Cache</div>
+    </div>
+    <div class="svc">
+      <div class="svc-name">application-service</div>
+      <div class="svc-port">:8083</div>
+      <div class="svc-desc">Apply · Resume Upload · Status · CQRS · Flyway</div>
+    </div>
+    <div class="svc">
+      <div class="svc-name">file-service</div>
+      <div class="svc-port">:8084</div>
+      <div class="svc-desc">Cloudinary Proxy · Images · PDFs</div>
+    </div>
+    <div class="svc">
+      <div class="svc-name">notification-service</div>
+      <div class="svc-port">:8085</div>
+      <div class="svc-desc">Kafka Consumer · Gmail SMTP · SSE Stream</div>
+    </div>
+    <div class="svc">
+      <div class="svc-name">admin-service</div>
+      <div class="svc-port">:8086</div>
+      <div class="svc-desc">Feign Proxy · Analytics Dashboard · ROLE_ADMIN</div>
+    </div>
+  </div>
+
+  <!-- KAFKA PRODUCER arrows -->
+  <div style="width:100%;max-width:1100px;height:40px;position:relative;margin:0 auto;">
+    <!-- auth → kafka line -->
+    <div style="position:absolute;top:0;left:8.3%;width:1px;height:100%;background:linear-gradient(180deg,var(--amber),transparent);"></div>
+    <!-- job → kafka -->
+    <div style="position:absolute;top:0;left:24.9%;width:1px;height:100%;background:linear-gradient(180deg,var(--amber),transparent);"></div>
+    <!-- app → kafka -->
+    <div style="position:absolute;top:0;left:41.6%;width:1px;height:100%;background:linear-gradient(180deg,var(--amber),transparent);"></div>
+    <!-- notification consumer (right side) -->
+    <div style="position:absolute;top:0;right:14.5%;width:1px;height:100%;background:linear-gradient(180deg,transparent,var(--amber));"></div>
+    <div style="position:absolute;top:16px;left:35%;right:14%;height:1px;background:var(--amber);opacity:0.25;"></div>
+    <div style="position:absolute;top:6px;left:38%;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--amber);letter-spacing:0.1em;">ASYNC KAFKA EVENTS</div>
+  </div>
+
+  <!-- KAFKA BUS -->
+  <div class="section-label">MESSAGE BUS</div>
+  <div class="wide-center">
+    <div class="box kafka-box">
+      <div class="box-title">⚡ Apache Kafka</div>
+      <div class="box-sub">Topics: user-events · job-events · application-events · Dead Letter Queue</div>
+      <div class="box-port">localhost:9092 · Zookeeper :2181 · Idempotent consumers · DLQ support</div>
+    </div>
+  </div>
+
+  <div class="connector" style="background:linear-gradient(180deg,var(--dim),var(--dim));"></div>
+  <div class="connector" style="height:8px;background:var(--dim);"></div>
+
+  <!-- DATA STORES -->
+  <div class="section-label">DATA & INFRASTRUCTURE LAYER</div>
+  <div class="infra-row stores4" style="max-width:1100px;margin:0 auto;">
+    <div class="infra-box db">
+      <div class="infra-title">MySQL 8</div>
+      <div class="infra-sub">:3307 (host)<br>4 databases<br>auth_db · job_db<br>application_db · notification_db</div>
+    </div>
+    <div class="infra-box cache">
+      <div class="infra-title">Redis 7</div>
+      <div class="infra-sub">:6379<br>OTP cache (TTL)<br>Job listing cache<br>Rate limit counters</div>
+    </div>
+    <div class="infra-box cloud">
+      <div class="infra-title">Cloudinary CDN</div>
+      <div class="infra-sub">External API<br>Profile images<br>Resumes (PDF/DOCX)<br>Company logos</div>
+    </div>
+    <div class="infra-box mail">
+      <div class="infra-title">Gmail SMTP</div>
+      <div class="infra-sub">Port 587<br>OTP verification<br>App status emails<br>Welcome emails</div>
+    </div>
+  </div>
+
+  <div style="height:24px;"></div>
+
+  <!-- SERVICE REGISTRY & CONFIG -->
+  <div class="section-label">SERVICE REGISTRY & CONFIG</div>
+  <div class="infra-row stores3" style="max-width:1100px;margin:0 auto;">
+    <div class="infra-box reg">
+      <div class="infra-title">Eureka Server</div>
+      <div class="infra-sub">:8761<br>Service discovery &amp; registration<br>Load balancer routing<br>Health heartbeats</div>
+    </div>
+    <div class="infra-box reg">
+      <div class="infra-title">Config Server</div>
+      <div class="infra-sub">:8888<br>Centralised config<br>native profile<br>config-repo/ directory</div>
+    </div>
+    <div class="infra-box cloud">
+      <div class="infra-title">OAuth2 / Google SSO</div>
+      <div class="infra-sub">auth-service handles<br>/oauth2/** routes<br>Google provider<br>JWT issued after SSO</div>
+    </div>
+  </div>
+
+  <div style="height:24px;"></div>
+
+  <!-- MONITORING -->
+  <div class="section-label">OBSERVABILITY STACK (optional · build_monitoring.sh)</div>
+  <div class="infra-row stores5" style="max-width:1100px;margin:0 auto;">
+    <div class="infra-box mon">
+      <div class="infra-title">Prometheus</div>
+      <div class="infra-sub">:9090<br>Scrapes /actuator/<br>prometheus</div>
+    </div>
+    <div class="infra-box mon">
+      <div class="infra-title">Grafana</div>
+      <div class="infra-sub">:3001<br>3 pre-built<br>dashboards</div>
+    </div>
+    <div class="infra-box mon">
+      <div class="infra-title">Loki / Promtail</div>
+      <div class="infra-sub">:3100<br>Log aggregation<br>from containers</div>
+    </div>
+    <div class="infra-box mon">
+      <div class="infra-title">Zipkin</div>
+      <div class="infra-sub">:9411<br>Distributed tracing<br>Micrometer traces</div>
+    </div>
+    <div class="infra-box mon">
+      <div class="infra-title">SonarQube</div>
+      <div class="infra-sub">:9000<br>Code quality<br>Coverage gates</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- JWT FLOW -->
+<div style="height:48px;"></div>
+<div class="section-label">JWT AUTHENTICATION FLOW</div>
+<div class="jwt-flow" style="max-width:1100px;margin:0 auto;">
+  <div class="jwt-steps">
+    <div class="jwt-step">
+      <div class="jwt-step-num">STEP 1</div>
+      <div class="jwt-step-text">Register</div>
+      <div class="jwt-step-desc">Email OTP sent<br>stored in Redis with TTL</div>
+    </div>
+    <div class="jwt-arrow">→</div>
+    <div class="jwt-step">
+      <div class="jwt-step-num">STEP 2</div>
+      <div class="jwt-step-text">Verify OTP</div>
+      <div class="jwt-step-desc">Redis validates 6-digit code<br>account activated</div>
+    </div>
+    <div class="jwt-arrow">→</div>
+    <div class="jwt-step">
+      <div class="jwt-step-num">STEP 3</div>
+      <div class="jwt-step-text">Login</div>
+      <div class="jwt-step-desc">JWT access token issued<br>+ refresh token (DB stored)</div>
+    </div>
+    <div class="jwt-arrow">→</div>
+    <div class="jwt-step">
+      <div class="jwt-step-num">STEP 4</div>
+      <div class="jwt-step-text">Gateway Validates</div>
+      <div class="jwt-step-desc">HMAC-SHA256 verify<br>injects X-User-Id/Role/Email</div>
+    </div>
+    <div class="jwt-arrow">→</div>
+    <div class="jwt-step">
+      <div class="jwt-step-num">STEP 5</div>
+      <div class="jwt-step-text">Downstream Trusts</div>
+      <div class="jwt-step-desc">No re-validation<br>reads X-User-* headers</div>
+    </div>
+  </div>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--green);"></div> Frontend (React)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--accent);"></div> API Gateway</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--purple);"></div> Microservices (Spring Boot)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--amber);"></div> Kafka (async events)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--coral);"></div> MySQL databases</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--accent2);"></div> Redis cache</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--green);"></div> Monitoring stack</div>
+</div>
+
+<!-- EXPLANATION CARDS -->
+<div class="explain-grid">
+  <div class="explain-card">
+    <div class="ec-header">
+      <div class="ec-icon" style="background:rgba(59,130,246,0.1);">🔀</div>
+      <div class="ec-title">Why Microservices?</div>
+    </div>
+    <div class="ec-body">
+      Each service is <strong>independently deployable</strong> and owns its data. auth-service owns <strong>auth_db</strong>, job-service owns <strong>job_db</strong>, etc. Services communicate via <strong>Feign HTTP clients</strong> (synchronous) or <strong>Kafka topics</strong> (async). A failure in notification-service does NOT bring down job postings.
+    </div>
+  </div>
+  <div class="explain-card">
+    <div class="ec-header">
+      <div class="ec-icon" style="background:rgba(245,158,11,0.1);">⚡</div>
+      <div class="ec-title">Why Kafka?</div>
+    </div>
+    <div class="ec-body">
+      When a user applies for a job, <strong>application-service</strong> publishes an <code>ApplicationEvent(action=SUBMITTED)</code> to Kafka. The <strong>notification-service</strong> consumes it and sends confirmation emails — <strong>without coupling the two services</strong>. Kafka also ensures <strong>at-least-once delivery</strong> with idempotency keys stored in <code>processed_kafka_events</code> table.
+    </div>
+  </div>
+  <div class="explain-card">
+    <div class="ec-header">
+      <div class="ec-icon" style="background:rgba(16,185,129,0.1);">🛡️</div>
+      <div class="ec-title">Why a Single API Gateway?</div>
+    </div>
+    <div class="ec-body">
+      The gateway is the <strong>single entry point</strong> for all client traffic. It validates JWT once (<strong>JwtAuthFilter</strong>), strips the token, and injects <code>X-User-Id</code>, <code>X-User-Email</code>, <code>X-User-Role</code> headers. Downstream services never re-validate JWT — they <strong>trust the gateway-injected headers</strong>. CORS, rate limiting, and Swagger aggregation all live in one place.
+    </div>
+  </div>
+  <div class="explain-card">
+    <div class="ec-header">
+      <div class="ec-icon" style="background:rgba(139,92,246,0.1);">💾</div>
+      <div class="ec-title">Why Redis?</div>
+    </div>
+    <div class="ec-body">
+      Redis stores <strong>OTP codes with TTL</strong> (auto-expire) — no DB cleanup job needed. It also caches <strong>job listings and statistics</strong> in job-service to avoid expensive DB queries on every search. Cache is invalidated on job create/update/delete via Spring's <strong>@CacheEvict</strong>.
+    </div>
+  </div>
+  <div class="explain-card">
+    <div class="ec-header">
+      <div class="ec-icon" style="background:rgba(249,115,22,0.1);">📡</div>
+      <div class="ec-title">Server-Sent Events (SSE)</div>
+    </div>
+    <div class="ec-body">
+      The React Navbar subscribes to <code>/api/v1/notifications/my/stream?token=JWT</code>. Since browsers cannot send custom headers with EventSource, the JWT is passed as a query parameter. The <strong>gateway's JwtAuthFilter</strong> handles this special path and injects <code>X-User-Id</code> normally. The connection is a long-lived HTTP stream — no polling needed.
+    </div>
+  </div>
+  <div class="explain-card">
+    <div class="ec-header">
+      <div class="ec-icon" style="background:rgba(6,182,212,0.1);">🔄</div>
+      <div class="ec-title">Admin Service — No Own Database</div>
+    </div>
+    <div class="ec-body">
+      admin-service is a <strong>pure aggregator</strong>. It has no MySQL database. Instead it uses <strong>Spring Cloud OpenFeign</strong> to call auth-service, job-service, and application-service. Each Feign client has a <strong>Resilience4j circuit breaker</strong> that returns empty/zero data if downstream fails — dashboard stays up even if one service is down.
+    </div>
+  </div>
+</div>
+
+<!-- INTERVIEW TIPS -->
+<div class="tip-box">
+  <h3>💡 INTERVIEW TALKING POINTS — Architecture</h3>
+  <ul class="tip-list">
+    <li><strong>Service boundary decision:</strong> "I chose to separate file-service so that Cloudinary credentials are isolated — no other service needs cloud storage configuration."</li>
+    <li><strong>Database-per-service:</strong> "Each service owns its schema. application-service uses Flyway for versioned migrations (V1–V3). Other services rely on JPA's hbm2ddl auto-create."</li>
+    <li><strong>Token refresh:</strong> "Axios interceptors silently refresh the access token on 401 — the user never sees a forced logout unless the refresh token itself expires."</li>
+    <li><strong>Idempotency:</strong> "Kafka consumers check the processed_kafka_events table before acting on any event. This prevents duplicate emails if Kafka redelivers a message."</li>
+    <li><strong>Circuit breakers:</strong> "Resilience4j wraps every Feign call in admin-service. If auth-service is slow, the circuit opens and admin returns cached/empty data instead of cascading failure."</li>
+    <li><strong>SSE vs WebSocket:</strong> "I chose SSE because notifications are server-to-client only. SSE is simpler (HTTP), firewall-friendly, and auto-reconnects. WebSocket would be overkill here."</li>
+  </ul>
+</div>
+
+<footer>
+  CareerBridge · Architecture Documentation · Spring Boot 3 · React 18 · Microservices
+</footer>
+
+</body>
+</html>
