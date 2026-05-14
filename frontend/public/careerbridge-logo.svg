@@ -1,0 +1,33 @@
+<svg width="900" height="360" viewBox="0 0 900 360" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CareerBridge logo">
+  <rect width="900" height="360" fill="transparent"/>
+  <defs>
+    <linearGradient id="cbMark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0F325A"/>
+      <stop offset="100%" stop-color="#173E70"/>
+    </linearGradient>
+    <linearGradient id="cbAccent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#19BFD6"/>
+      <stop offset="100%" stop-color="#4BC2D1"/>
+    </linearGradient>
+    <linearGradient id="cbWordmark" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#16345F"/>
+      <stop offset="55%" stop-color="#16345F"/>
+      <stop offset="100%" stop-color="#16345F"/>
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(150 48)">
+    <path d="M90 0L180 108H140L90 48L40 108H0L90 0Z" fill="none" stroke="url(#cbMark)" stroke-width="13" stroke-linejoin="round"/>
+    <path d="M24 108L90 30L156 108" fill="none" stroke="url(#cbAccent)" stroke-width="10" stroke-linejoin="round"/>
+    <path d="M58 108L90 62L122 108" fill="none" stroke="url(#cbMark)" stroke-width="9" stroke-linecap="round"/>
+    <path d="M40 108L58 82" fill="none" stroke="url(#cbMark)" stroke-width="7" stroke-linecap="round"/>
+    <path d="M140 108L122 82" fill="none" stroke="url(#cbMark)" stroke-width="7" stroke-linecap="round"/>
+    <path d="M90 53V108" fill="none" stroke="url(#cbMark)" stroke-width="7" stroke-linecap="round"/>
+  </g>
+
+  <g transform="translate(40 175)">
+    <text x="0" y="78" fill="url(#cbWordmark)" font-family="Inter, Arial, Helvetica, sans-serif" font-size="102" font-weight="800" letter-spacing="-3">
+      CAREER<tspan fill="#45BFD3">B</tspan>ridge
+    </text>
+  </g>
+</svg>

@@ -1,0 +1,193 @@
+server:
+  port: 8080
+  address: 0.0.0.0
+
+spring:
+  config:
+    import: optional:configserver:${CONFIG_SERVER_URL:http://config-server:8888/}
+  application:
+    name: api-gateway
+  codec:
+    max-in-memory-size: 20MB
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
+  cloud:
+    gateway:
+      forwarded:
+        enabled: true
+      x-forwarded:
+        enabled: true
+        for-enabled: true
+        proto-enabled: true
+        host-enabled: true
+        port-enabled: true
+        prefix-enabled: true
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: auth-service-public
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/v1/auth/**
+
+        - id: auth-service-protected
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/v1/users/**
+          filters:
+            - JwtAuthFilter
+
+        - id: job-service-recruiter-protected
+          uri: lb://job-service
+          predicates:
+            - Path=/api/v1/jobs/recruiter/**
+          filters:
+            - JwtAuthFilter
+
+        - id: job-service-stats-public
+          uri: lb://job-service
+          predicates:
+            - Path=/api/v1/jobs/stats,/api/v1/jobs/categories
+            - Method=GET
+
+        - id: job-service-search-public
+          uri: lb://job-service
+          predicates:
+            - Path=/api/v1/jobs/search
+            - Method=GET
+
+        - id: job-service-public
+          uri: lb://job-service
+          predicates:
+            - Path=/api/v1/jobs/{id}
+            - Method=GET
+
+        - id: job-service-list-public
+          uri: lb://job-service
+          predicates:
+            - Path=/api/v1/jobs
+            - Method=GET
+
+        - id: job-service-protected
+          uri: lb://job-service
+          predicates:
+            - Path=/api/v1/jobs/**
+            - Method=POST,PUT,DELETE,PATCH
+          filters:
+            - JwtAuthFilter
+
+        - id: application-service
+          uri: lb://application-service
+          predicates:
+            - Path=/api/v1/applications/**
+          filters:
+            - JwtAuthFilter
+
+        - id: file-service
+          uri: lb://file-service
+          predicates:
+            - Path=/api/v1/files/**
+          filters:
+            - JwtAuthFilter
+
+        # SSE streaming route MUST come before the general notification route
+        # RemoveResponseHeader=Content-Length is required for SSE to stream correctly
+        # through Spring Cloud Gateway (reactive). JwtAuthFilter already handles
+        # ?token= query param for EventSource clients that cannot set headers.
+        - id: notification-service-sse
+          uri: lb://notification-service
+          predicates:
+            - Path=/api/v1/notifications/my/stream
+            - Method=GET
+          filters:
+            - JwtAuthFilter
+            - RemoveResponseHeader=Content-Length
+
+        # Public feedback endpoint — no auth required (homepage reviews)
+        - id: notification-feedback-public
+          uri: lb://notification-service
+          predicates:
+            - Path=/api/v1/notifications/feedback/public
+            - Method=GET
+
+        - id: notification-service
+          uri: lb://notification-service
+          predicates:
+            - Path=/api/v1/notifications/**
+          filters:
+            - JwtAuthFilter
+
+        # OAuth2 routes — must pass through to auth-service WITHOUT JWT filter
+        # because the OAuth redirect does not carry a Bearer token
+        - id: auth-service-oauth
+          uri: lb://auth-service
+          predicates:
+            - Path=/oauth2/**,/login/oauth2/**,/api/v1/auth/oauth/**
+
+        - id: admin-service
+          uri: lb://admin-service
+          predicates:
+            - Path=/api/v1/admin/**
+          filters:
+            - JwtAuthFilter
+
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        cors-configurations:
+          '[/**]':
+            allowedOriginPatterns:
+              - "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+            allowCredentials: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://eureka-server:8761/eureka/}
+  instance:
+    prefer-ip-address: true
+
+jwt:
+  secret: ${JWT_SECRET}
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health,info,gateway,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+logging:
+  level:
+    com.jobportal: INFO
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    urls:
+      - name: auth-service
+        url: /auth-service/api-docs
+      - name: job-service
+        url: /job-service/api-docs
+      - name: application-service
+        url: /application-service/api-docs
+      - name: file-service
+        url: /file-service/api-docs
+      - name: admin-service
+        url: /admin-service/api-docs

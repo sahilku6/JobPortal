@@ -1,0 +1,19 @@
+# Environment files
+.env
+*.env.local
+
+# Node / Vite build output
+node_modules/
+dist/
+coverage/
+.vite/
+.eslintcache
+
+# IDE / editor
+.idea/
+.vscode/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
